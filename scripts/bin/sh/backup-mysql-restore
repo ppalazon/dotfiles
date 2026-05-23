@@ -1,0 +1,175 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+########################################
+# Defaults
+########################################
+
+DB_USER="backupuser"
+DB_HOST="localhost"
+DB_PORT="3306"
+DB_NAME="mydatabase"
+
+PASS_PREFIX="localhost/mysql"
+
+########################################
+# Help
+########################################
+
+usage() {
+cat <<EOF
+Usage:
+  $0 [options] <dump-file>
+
+Options:
+  -u, --user         MySQL user             (default: $DB_USER)
+  -H, --host         MySQL host             (default: $DB_HOST)
+  -p, --port         MySQL port             (default: $DB_PORT)
+  -d, --db           Database name          (default: $DB_NAME)
+  -P, --pass-prefix  Password-store prefix  (default: $PASS_PREFIX - pass:$PASS_PREFIX/$DB_USER)
+  -h, --help         Show help
+
+Arguments:
+  dump-file          Required .sql or .sql.gz file
+
+Examples:
+
+Restore DB:
+  $0 mydatabase_2026-04-23_12-00-00.sql.gz
+
+Restore plain SQL:
+  $0 dump.sql
+
+Remote restore:
+  $0 -u admin -H mysql.example.com -d inventory dump.sql.gz
+EOF
+exit 0
+}
+
+########################################
+# Parse options
+########################################
+
+PARSED=$(getopt \
+  -o u:H:p:d:P:h \
+  --long user:,host:,port:,db:,pass-prefix:,help \
+  -- "$@"
+)
+
+eval set -- "$PARSED"
+
+while true; do
+  case "$1" in
+    -u|--user)
+      DB_USER="$2"
+      shift 2
+      ;;
+    -H|--host)
+      DB_HOST="$2"
+      shift 2
+      ;;
+    -p|--port)
+      DB_PORT="$2"
+      shift 2
+      ;;
+    -d|--db)
+      DB_NAME="$2"
+      shift 2
+      ;;
+    -P|--pass-prefix)
+      PASS_PREFIX="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+########################################
+# Mandatory dump argument
+########################################
+
+if [[ $# -ne 1 ]]; then
+  usage
+fi
+
+DUMP_FILE="$1"
+
+if [[ ! -f "$DUMP_FILE" ]]; then
+  echo "Dump file not found: $DUMP_FILE" >&2
+  exit 1
+fi
+
+########################################
+# Checks
+########################################
+
+command -v pass >/dev/null || {
+  echo "pass not installed"
+  exit 1
+}
+
+# Prefer mariadb client if available
+if command -v mariadb >/dev/null; then
+  MYSQL_CLIENT="mariadb"
+elif command -v mysql >/dev/null; then
+  MYSQL_CLIENT="mysql"
+else
+  echo "mysql/mariadb client not installed"
+  exit 1
+fi
+
+########################################
+# Read password
+########################################
+
+PASS_ENTRY="${PASS_PREFIX}/${DB_USER}"
+MYSQL_PASS=$(pass show "$PASS_ENTRY" | head -n1)
+
+########################################
+# SSL compatibility (MySQL vs MariaDB)
+########################################
+
+if $MYSQL_CLIENT --help | grep -q ssl-mode; then
+  SSL_OPTS=(--ssl-mode=DISABLED)
+else
+  SSL_OPTS=(--ssl=0)
+fi
+
+########################################
+# Build command
+########################################
+
+CMD=(
+  "$MYSQL_CLIENT"
+  --host="$DB_HOST"
+  --port="$DB_PORT"
+  --user="$DB_USER"
+  --password="$MYSQL_PASS"
+  "${SSL_OPTS[@]}"
+  "$DB_NAME"
+)
+
+########################################
+# Run restore
+########################################
+
+echo "Running restore..."
+echo "File: $DUMP_FILE"
+echo "Client: $MYSQL_CLIENT"
+
+if [[ "$DUMP_FILE" == *.gz ]]; then
+  gunzip -c "$DUMP_FILE" | pv | "${CMD[@]}"
+else
+  "${CMD[@]}" < "$DUMP_FILE"
+fi
+
+echo "Restore completed."

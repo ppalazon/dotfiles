@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# [[file:../org/zk/20241024-202549-amd_vivado.org::*arch command][arch command:1]]
+uname -m
+# arch command:1 ends here

@@ -1,0 +1,72 @@
+rule.precedence.color=deleted,completed,active,keyword.,tag.,project.,overdue,scheduled,due.today,due,blocked,blocking,recurring,tagged,uda.
+
+# General decoration
+color.label=color07
+color.label.sort=color07
+color.alternate=color07
+color.header=color04
+color.footnote=color08
+color.warning=color03
+color.error=color09
+color.debug=color06
+
+# Task state
+color.completed=color10
+color.deleted=color08
+color.active=color02
+color.recurring=color05
+color.scheduled=color06
+color.until=color05
+color.blocked=color01
+color.blocking=color03
+
+# Project
+color.project.none=color08
+
+# Priority
+color.uda.priority.H=color01
+color.uda.priority.M=color03
+color.uda.priority.L=color08
+
+# Tags
+color.tag.next=color02
+color.tag.none=color08
+color.tagged=color05
+
+# Due
+color.due.today=color05
+color.due=color04
+color.overdue=color01
+
+# Report: burndown
+color.burndown.done=color02
+color.burndown.pending=color01
+color.burndown.started=color03
+
+# Report: history
+color.history.add=color02
+color.history.delete=color01
+color.history.done=color04
+
+# Report: summary
+color.summary.background=color07
+color.summary.bar=color04
+
+# Command: calendar
+color.calendar.due.today=color05
+color.calendar.due=color04
+color.calendar.holiday=color03
+color.calendar.scheduled=
+color.calendar.overdue=color01
+color.calendar.today=color02
+color.calendar.weekend=color08
+color.calendar.weeknumber=color05
+
+# Command: sync
+color.sync.added=color02
+color.sync.changed=color03
+color.sync.rejected=color01
+
+# Command: undo
+color.undo.after=color02
+color.undo.before=color01

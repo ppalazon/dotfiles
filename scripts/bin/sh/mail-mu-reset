@@ -1,0 +1,10 @@
+#!/bin/bash
+
+MU_EMAIL="${MU_EMAIL:-user@example.com}"
+MU_EMAIL_DIR="${MU_EMAIL//@/-}"
+
+rm -r $HOME/.tmp-mu
+mkdir $HOME/.tmp-mu
+mv $HOME/.mu/$MU_EMAIL_DIR $HOME/.tmp-mu
+mu init --my-address=$MU_EMAIL -m $HOME/.mail/$MU_EMAIL_DIR --muhome=$HOME/.mu/$MU_EMAIL_DIR
+mu index --muhome=$HOME/.mu/$MU_EMAIL_DIR

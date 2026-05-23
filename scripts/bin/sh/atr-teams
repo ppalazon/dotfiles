@@ -1,0 +1,3 @@
+#!/bin/bash
+
+/opt/teams-for-linux/teams-for-linux --class=teams-atr --user-data-dir="$HOME"/.config/teams-profile-atr

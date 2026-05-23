@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+KEY="${1:-}"
+
+if [[ -z "$KEY" ]]; then
+  echo "Usage: $0 <KEYID | email | fingerprint>"
+  exit 1
+fi
+
+echo "========================================"
+echo "🔐 GPG KEY REPORT: $KEY"
+echo "========================================"
+echo
+
+# Temporary files
+PUB=$(mktemp)
+SEC=$(mktemp)
+
+# Collect machine-readable info
+gpg -k --with-colons --with-fingerprint --with-subkey-fingerprint "$KEY" >"$PUB" 2>/dev/null || true
+gpg -K --with-colons --with-fingerprint --with-subkey-fingerprint "$KEY" >"$SEC" 2>/dev/null || true
+
+# -----------------------------
+# Helpers
+# -----------------------------
+has_record() {
+  grep -q "^$1:" "$2"
+}
+
+extract_validity() {
+  grep "^uid:" "$1" | cut -d: -f2 | head -n1
+}
+
+is_revoked() {
+  grep -q "^rev:" "$1"
+}
+
+is_expired() {
+  awk -F: '$1=="pub" || $1=="sec" { if ($7 != "" && $7 < systime()) print "yes"; }' "$1" | grep -q yes
+}
+
+get_caps() {
+  awk -F: '$1=="pub" || $1=="sub" {print $12}' "$1" | tr -d '\n'
+}
+
+has_cap() {
+  echo "$1" | grep -q "$2"
+}
+
+# -----------------------------
+# Basic presence
+# -----------------------------
+pub_present=false
+sec_present=false
+master_present=false
+master_stub=false
+
+if has_record pub "$PUB"; then
+  pub_present=true
+fi
+
+if has_record sec "$SEC"; then
+  sec_present=true
+fi
+
+# Master key detection
+if grep -q "^sec:" "$SEC"; then
+  master_present=true
+fi
+
+if grep -q "^sec#:" "$SEC"; then
+  master_stub=true
+fi
+
+# -----------------------------
+# Subkeys
+# -----------------------------
+signing=false
+encryption=false
+auth=false
+
+caps=$(get_caps "$PUB")
+
+has_cap "$caps" "s" && signing=true
+has_cap "$caps" "e" && encryption=true
+has_cap "$caps" "a" && auth=true
+
+# -----------------------------
+# Validity / trust
+# -----------------------------
+validity=$(extract_validity "$PUB")
+
+revoked=false
+expired=false
+
+is_revoked "$PUB" && revoked=true
+is_expired "$PUB" && expired=true
+
+# -----------------------------
+# Signature validation
+# -----------------------------
+sig_check="unknown"
+if gpg --check-sigs "$KEY" >/dev/null 2>&1; then
+  sig_check="ok"
+else
+  sig_check="failed/partial"
+fi
+
+# -----------------------------
+# Signing test (real usability)
+# -----------------------------
+sign_test="failed"
+if echo "test" | gpg --clear-sign -u "$KEY" >/dev/null 2>&1; then
+  sign_test="ok"
+fi
+
+# -----------------------------
+# Pretty report
+# -----------------------------
+echo "📄 RAW INFO (human-readable)"
+echo "----------------------------------------"
+gpg -k "$KEY" || true
+echo
+gpg -K "$KEY" || true
+echo
+
+echo "🔍 ANALYSIS"
+echo "----------------------------------------"
+echo "Public key present:        $pub_present"
+echo "Secret key present:        $sec_present"
+echo "Master key present:        $master_present"
+echo "Master key is stub:        $master_stub"
+echo
+
+echo "Capabilities:"
+echo "  Signing:                 $signing"
+echo "  Encryption:              $encryption"
+echo "  Authentication:          $auth"
+echo
+
+echo "Validity / status:"
+echo "  UID validity:            ${validity:-unknown}"
+echo "  Revoked:                 $revoked"
+echo "  Expired:                 $expired"
+echo
+
+echo "Checks:"
+echo "  Signature verification:  $sig_check"
+echo "  Signing test:            $sign_test"
+echo
+
+# -----------------------------
+# FINAL CHECKLIST
+# -----------------------------
+echo "========================================"
+echo "✅ FINAL CHECKLIST"
+echo "========================================"
+
+check() {
+  local name="$1"
+  local value="$2"
+  if [[ "$value" == "true" || "$value" == "ok" ]]; then
+    echo "[✅] $name"
+  else
+    echo "[⚠️] $name"
+  fi
+}
+
+check "Public key available" "$pub_present"
+check "Secret key available" "$sec_present"
+check "Master secret key present" "$master_present"
+check "Master key is NOT stub" "$( [[ "$master_stub" == false ]] && echo true || echo false )"
+check "Key is NOT revoked" "$( [[ "$revoked" == false ]] && echo true || echo false )"
+check "Key is NOT expired" "$( [[ "$expired" == false ]] && echo true || echo false )"
+check "Has signing capability" "$signing"
+check "Has encryption capability" "$auth"
+check "Has authenticate capability" "$auth"
+check "Signing actually works" "$sign_test"
+check "Signatures validate" "$sig_check"
+
+echo
+echo "========================================"
+
+# Cleanup
+rm -f "$PUB" "$SEC"

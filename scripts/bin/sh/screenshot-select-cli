@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+GEOMETRY=${1:-}
+
+if [[ -z "$GEOMETRY" ]]; then
+  echo "$0 <geometry>" >&2
+  notify-send "No geometry provided" "Please provide a geometry string as an argument, or use the screenshot-select-capture script to select an area interactively."
+  exit 1
+fi
+
+SCREENSHOT_DIR="${SCREENSHOT_DIR:-$HOME/pictures/screen}"
+mkdir -p "$SCREENSHOT_DIR"
+
+FILENAME="$SCREENSHOT_DIR/screenshot-$(date +%Y%m%d-%H%M%S).png"
+maim -g "$GEOMETRY" -u "$FILENAME"
+
+# Save latest geometry for repeat captures
+echo "$GEOMETRY" > /tmp/screenshot-geometry
+
+xclip -selection clipboard -t image/png -i "$FILENAME"
+echo "$FILENAME" | xclip -selection primary 
+
+notify-send "Screenshot saved and on clipboard" "$FILENAME"

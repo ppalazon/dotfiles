@@ -1,0 +1,11 @@
+#!/bin/bash
+
+MU_EMAIL="${MU_EMAIL:-user@example.com}"
+MU_EMAIL_DIR="${MU_EMAIL//@/-}"
+
+rm -r $HOME/.tmp-offlineimap
+mkdir $HOME/.tmp-offlineimap
+mv $HOME/.offlineimap/account-$MU_EMAIL_DIR $HOME/.tmp-offlineimap
+mv $HOME/.offlineimap/repository-$MU_EMAIL_DIR-local  $HOME/.tmp-offlineimap
+mv $HOME/.offlineimap/repository-$MU_EMAIL_DIR-remote $HOME/.tmp-offlineimap
+offlineimap

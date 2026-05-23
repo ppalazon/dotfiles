@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+tmp="$(mktemp --suffix=.png)"
+trap 'rm -f "$tmp"' EXIT
+
+# Fullscreen capture
+maim "$tmp"
+
+# Change cursor / wait for click
+notify-send -u normal "🎨  Color picker" "Haz clic en un píxel..."
+eval "$(xdotool getmouselocation --shell)"
+xdotool selectwindow >/dev/null 2>&1 || true
+
+eval "$(xdotool getmouselocation --shell)"
+
+# Pick pixel color
+color="$(magick "$tmp" -format '%[pixel:p{'"$X"','"$Y"'}]' info:-)"
+
+# Convert srgb(r,g,b) to hex
+hex="$(magick xc:"$color" -format '%[hex:p{0,0}]' info:- | cut -c1-6)"
+
+echo "#$hex"
+
+# Optional: copy to clipboard
+notify-send -u normal "🎨  Color picker" "Selected: #$hex"
+printf '#%s' "$hex" | xclip -selection clipboard

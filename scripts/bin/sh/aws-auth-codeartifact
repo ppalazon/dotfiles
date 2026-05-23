@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "Getting auth on codeartifact..."
+
+CODEARTIFACT_DOMAIN="${CODEARTIFACT_DOMAIN:-domain}"
+REGION="${REGION:-eu-west-1}"
+
+export CODEARTIFACT_AUTH_TOKEN=`aws codeartifact get-authorization-token \
+  --region $REGION --domain $CODEARTIFACT_DOMAIN \
+  --query authorizationToken --output text --duration-seconds 900`

@@ -1,0 +1,26 @@
+[global_config]
+  borderless = True
+  extra_styling = False
+  suppress_multiple_term_dialog = True
+[keybindings]
+[profiles]
+  [[default]]
+    font = DejaVu Sans Mono 8
+    foreground_color = "#ffffff"
+    show_titlebar = False
+  [[view-log]]
+    background_color = "#222222"
+    font = DejaVu Sans Mono 8
+    foreground_color = "#88b137"
+    show_titlebar = False
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = default
+      command = ""  
+[plugins]

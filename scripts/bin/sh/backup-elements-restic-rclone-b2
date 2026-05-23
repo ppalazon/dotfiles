@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Check whether external drive is connected (/media/elements)
+uuid=2f263d2d-4296-4d19-ba2a-0ee7c7d1f872
+if [[ -z $(lsblk -f | grep $uuid) ]]; then
+  echo "WD Elements driver is not connected at an usb port and mount at /media/elements"
+  exit 0
+fi
+
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
+set -e
+set -v
+
+rclone sync --progress /media/elements/restic pps-restic-elements:pps-restic-elements

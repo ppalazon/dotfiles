@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+source aws-auth-codeartifact
+mvn versions:update-properties

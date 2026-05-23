@@ -1,0 +1,4 @@
+#!/bin/bash
+# [[file:../org/zk/20200629130500-aws_ecs_scripts.org::*Urxvt script for ssh][Urxvt script for ssh:1]]
+urxvt -e bash -c "export TERM=xterm; echo 'ssh $@'; ssh $@"
+# Urxvt script for ssh:1 ends here

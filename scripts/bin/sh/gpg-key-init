@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+echo "Initializing GPG key setup..."
+
+echo "What's your name?"
+read -r NAME
+
+echo "What's your email?"
+read -r EMAIL
+
+echo "How long should the key be valid? (default: 5y, e.g., 1y, 6m, never)"
+read -r DURATION
+
+DURATION=${DURATION:-5y}
+
+echo
+echo "Creating GPG key for $NAME <$EMAIL> with duration $DURATION..."
+gpg-key-create -n "$NAME" -e "$EMAIL" -d "$DURATION"
+
+echo
+echo "Backing up and exporting keys..."
+gpg-key-backup "$EMAIL"
+
+echo
+echo "Exporting revoke certificate..."
+gpg-key-backup-revoke-cert "$EMAIL"
+
+

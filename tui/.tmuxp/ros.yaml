@@ -1,0 +1,22 @@
+start_directory: ${ROS_WORKSPACE_DIR}
+session_name: ros
+#shell_command_before: source /opt/ros/indigo/setup.bash
+environment:
+  ACTIVE_ROS_INDIGO: LOAD
+  ROS_HOSTNAME: localhost
+  ROS_MASTER_URI: http://localhost:11311
+windows:
+  - window_name: editor
+    layout: tiled
+    panes:
+      - blank
+  - window_name: runtime
+    layout: tiled
+    panes:
+      - blank
+  - window_name: rviz
+    panes:
+      - rosrun rviz rviz
+  - window_name: roscore
+    panes:
+      - roscore

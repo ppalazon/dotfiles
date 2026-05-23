@@ -1,0 +1,25 @@
+#!/bin/bash
+
+container_name="xilinx-2025.2"
+container_path="/var/lib/machines/$container_name"
+
+auth_file=/tmp/${container_name}_xauth
+touch $auth_file
+xauth nextract - "$DISPLAY" | sed -e 's/^..../ffff/' | xauth -f "$auth_file" nmerge -
+
+HOME_DIR=$HOME
+USER_NAME=$(id -un)
+
+sudo systemd-nspawn -D $container_path \
+  --user $USER_NAME \
+  --network-namespace-path=/proc/1/ns/net \
+  --bind-ro=/etc/resolv.conf \
+  --bind=$HOME_DIR/work \
+  --bind=$HOME_DIR/downloads \
+  --bind=$HOME_DIR/.Xilinx \
+  --bind-ro=/tmp/.X11-unix/ \
+  --bind="${auth_file}" --setenv=XAUTHORITY=${auth_file} \
+  --setenv=DISPLAY=$DISPLAY \
+  --setenv=TERM=xterm \
+  --setenv=LANG=en_US.UTF-8 \
+  /bin/bash -lc 'cd $HOME && exec tmux new-session -A -s xilinx'

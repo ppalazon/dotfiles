@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# oss-cad-suite: https://github.com/YosysHQ/oss-cad-suite-build/releases
+
+OSS_CAD_SUITE_DIR="$HOME/tools/oss-cad-suite/current"
+if [[ -d "$OSS_CAD_SUITE_DIR/bin" ]]; then
+  export PATH="$OSS_CAD_SUITE_DIR/bin:$PATH"
+fi
+
+QUESTA_SIM_DIR="$HOME/tools/questa/altera-25.1std/questa_fse/"
+if [[ -d "$QUESTA_SIM_DIR/bin" ]]; then
+  export PATH="$QUESTA_SIM_DIR/bin:$PATH"
+fi
+# Activate questa sim license
+export SALT_LICENSE_SERVER=~/FlexLM/LR-164616_License.dat
+
+# Activate vivado 
+VIVADO_DIR="$HOME/tools/xilinx/2025.2.1/Vivado"
+[[ -f "$VIVADO_DIR/settings64.sh" ]] && source "$VIVADO_DIR/settings64.sh"
+
+# Activate pyenv virtualenv if available
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+pyenv activate teroshdl
+

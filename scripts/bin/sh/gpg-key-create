@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -euo pipefail
+
+show_help() {
+  cat <<EOF
+Usage: $(basename "$0") -n "Name" -e "email@example.com" [-d duration]
+
+Options:
+  -n    Real name (required)
+  -e    Email address (required)
+  -d    Key duration (default: 5y, e.g., 1y, 6m, never)
+  -h    Show this help message
+
+Example:
+  $(basename "$0") -n "Test User" -e "test@example.org" -d 5y
+EOF
+}
+
+NAME=""
+EMAIL=""
+DURATION="5y"
+
+while getopts ":n:e:d:h" opt; do
+  case "$opt" in
+    n) NAME="$OPTARG" ;;
+    e) EMAIL="$OPTARG" ;;
+    d) DURATION="$OPTARG" ;;
+    h)
+      show_help
+      exit 0
+      ;;
+    :)
+      echo "Error: Option -$OPTARG requires an argument." >&2
+      show_help
+      exit 1
+      ;;
+    \?)
+      echo "Error: Invalid option -$OPTARG" >&2
+      show_help
+      exit 1
+      ;;
+  esac
+done
+
+# Validate required params
+if [[ -z "$NAME" || -z "$EMAIL" ]]; then
+  echo "Error: Name and email are required." >&2
+  show_help
+  exit 1
+fi
+
+USER_ID="$NAME <$EMAIL>"
+
+echo "Generating GPG key for: $USER_ID (expires: $DURATION)"
+
+# Create primary key (certification only)
+gpg --pinentry-mode ask --quick-gen-key "$USER_ID" ed25519 cert "$DURATION"
+
+# Extract fingerprint (IMPORTANT: use USER_ID, not undefined vars)
+FPR=$(gpg --with-colons --fingerprint "$USER_ID" \
+  | awk -F: '/^fpr:/ {print $10; exit}')
+
+if [[ -z "$FPR" ]]; then
+  echo "Error: Failed to retrieve fingerprint." >&2
+  exit 1
+fi
+
+echo "✅ Primary key fingerprint: $FPR"
+
+# Add subkeys
+echo
+echo "Adding subkeys (sign, encrypt, auth)..."
+echo "Adding signing subkey..."
+gpg --quick-add-key "$FPR" ed25519 sign "$DURATION"
+echo
+echo "Adding encryption subkey..."
+gpg --quick-add-key "$FPR" cv25519 encr "$DURATION"
+echo
+echo "Adding authentication subkey..."
+gpg --quick-add-key "$FPR" ed25519 auth "$DURATION"
+
+echo "✅ Subkeys added successfully."
+echo "✅ Key generation complete."

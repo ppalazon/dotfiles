@@ -1,0 +1,4 @@
+#!/bin/bash
+# [[file:../.emacs.d/README.org::*org-pomodoro][org-pomodoro:3]]
+$(emacsclient -e '(org-pomodoro)')
+# org-pomodoro:3 ends here

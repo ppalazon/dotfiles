@@ -1,0 +1,23 @@
+[Unit]
+Description=Xilinx cs_server (Vivado 2025.2.1)
+After=hw_server.service
+Requires=hw_server.service
+
+[Service]
+Type=simple
+
+ExecStart=/bin/bash -lc 'exec $HOME/tools/xilinx/2025.2.1/Vivado/bin/cs_server'
+
+Restart=on-failure
+RestartSec=2
+
+StandardOutput=journal
+StandardError=journal
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source $HOME/tools/xilinx/2025.2.1/Vitis/settings64.sh
+# export LD_PRELOAD=/usr/lib/libstdc++.so.6
+vitis -classic $@

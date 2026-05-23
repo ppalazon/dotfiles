@@ -1,0 +1,6 @@
+#!/bin/bash
+HOSTNAME=$(hostname)
+
+export BORG_RSH="ssh -i /root/.ssh/$HOSTNAME-backup"
+export BORG_RELOCATED_REPO_ACCESS_IS_OK=y
+borgmatic -v 2

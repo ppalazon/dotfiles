@@ -1,0 +1,90 @@
+#!/bin/bash
+# [[file:../org/zk/20200629130500-aws_ecs_scripts.org::*Execute command on ECS docker containers][Execute command on ECS docker containers:1]]
+#set -xv
+CLUSTER="default"
+REGION="eu-west-1"
+TASK_NUMBER=0
+SHOW_LOG=1
+
+while [[ $# -gt 1 ]]
+do
+key="$1"
+
+case $key in
+    -c|--cluster)
+    CLUSTER="$2"
+    shift # past argument
+    ;;
+    -s|--service-name)
+    SERVICE_NAME="$2"
+    shift # past argument
+    ;;
+    -r|--region)
+    REGION="$2"
+    shift # past argument
+    ;;
+    -l|--show-logs)
+    SHOW_LOG=1
+    shift # past argument
+    ;;
+    -t|--task-number)
+    TASK_NUMBER=$2
+    shift # past argument
+    ;;
+    -e|--exec)
+    COMMAND=$2
+    SHOW_LOG=0
+    shift # past argument
+    ;;
+    *)
+        # unknown option
+    ;;
+esac
+shift # past argument or value
+done
+
+if [[ -z ${SERVICE_NAME} ]]; then
+    echo "You need to specify service name, with -s or --service-name"
+    exit 255
+fi
+
+#SERVICE_JSON=`aws ecs describe-services --services ${SERVICE_NAME} --cluster ${CLUSTER} | jq -r ".services[0]"`
+#SERVICE_ARN=`echo ${SERVICE_JSON} | jq -r ".serviceArn"`
+TASK_ARN=`aws ecs list-tasks --cluster ${CLUSTER} --service-name ${SERVICE_NAME} | jq -r ".taskArns[${TASK_NUMBER}]"`
+
+if [[ -z ${TASK_ARN} ]]; then
+    echo "Task Arn wasn't found"
+    exit 255
+fi
+
+CONTAINER_JSON=`aws ecs describe-tasks --cluster ${CLUSTER} --tasks ${TASK_ARN} | jq -r ".tasks[0]"`
+CONTAINER_ARN=`echo ${CONTAINER_JSON} | jq -r ".containerInstanceArn"`
+
+if [[ -z ${CONTAINER_ARN} ]]; then
+    echo "Container Instance wasn't found"
+    exit 255
+fi
+
+DOCKER_ID=`echo ${CONTAINER_JSON} | jq -r ".containers[0].runtimeId"`
+
+if [[ -z ${DOCKER_ID} ]]; then
+    echo "Docker container id wasn't found"
+    exit 255
+fi
+
+EC2_ID=`aws ecs describe-container-instances --cluster ${CLUSTER} --container-instances ${CONTAINER_ARN} | jq -r ".containerInstances[0].ec2InstanceId"`
+
+if [[ -z ${EC2_ID} ]]; then
+    echo "EC2 Instance id wasn't found"
+    exit 255
+fi
+
+if [ $SHOW_LOG == 1 ]; then
+    echo "ssh ${EC2_ID} docker logs -f --tail=100 ${DOCKER_ID}"
+    exec ssh ${EC2_ID} docker logs -f --tail=100 ${DOCKER_ID}
+fi
+if [[ ! -z ${COMMAND} ]]; then
+    echo "ssh ${EC2_ID} docker exec -ti ${DOCKER_ID} ${COMMAND}"
+    exec ssh -t ${EC2_ID} docker exec -ti ${DOCKER_ID} ${COMMAND}
+fi
+# Execute command on ECS docker containers:1 ends here

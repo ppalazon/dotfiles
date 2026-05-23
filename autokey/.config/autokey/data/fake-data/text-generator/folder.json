@@ -1,0 +1,25 @@
+{
+    "type": "folder",
+    "title": "text-generator",
+    "modes": [],
+    "usageCount": 67,
+    "showInTrayMenu": false,
+    "abbreviation": {
+        "abbreviations": [
+            "tgen"
+        ],
+        "backspace": true,
+        "ignoreCase": false,
+        "immediate": false,
+        "triggerInside": false,
+        "wordChars": "[^ \\n]"
+    },
+    "hotkey": {
+        "modifiers": [],
+        "hotKey": null
+    },
+    "filter": {
+        "regex": null,
+        "isRecursive": false
+    }
+}

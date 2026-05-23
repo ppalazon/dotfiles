@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+# echo "Cleaning token credentials..."
+# rm $HOME/.aws/credentials
+
+echo "Getting token for administration..."
+AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID:-`aws sts get-caller-identity --query "Account" --output text`}
+ROLE="arn:aws:iam::${AWS_ACCOUNT_ID}:role/FullAdminRole"
+REGION="${REGION:-eu-west-1}"
+SECONDS=43100
+
+PASS_STORE_BASE="aws/user/cli"
+AWS_ACCESS_KEY_ID=$(pass ${PASS_STORE_BASE}/access-key-id)
+AWS_SECRET_ACCESS_KEY=$(pass ${PASS_STORE_BASE}/access-key-secret)
+
+# Setting cli environment auth
+export AWS_DEFAULT_REGION=$REGION
+
+HOSTNAME=$(hostname)
+
+TOKEN=$(aws sts assume-role --role-arn $ROLE --role-session-name $HOST-workstation --region $REGION --duration-seconds $SECONDS)
+
+ACCESS_KEY_ID=$(echo $TOKEN | jq -r ".Credentials.AccessKeyId")
+ACCESS_SECRET_KEY=$(echo $TOKEN | jq -r ".Credentials.SecretAccessKey")
+SESSION_TOKEN=$(echo $TOKEN | jq -r ".Credentials.SessionToken")
+
+cat > $HOME/.aws/credentials << EOF
+[default]
+aws_access_key_id = $ACCESS_KEY_ID
+aws_secret_access_key = $ACCESS_SECRET_KEY
+aws_session_token = $SESSION_TOKEN
+EOF

@@ -1,0 +1,47 @@
+\documentclass{article}
+
+% Page layout and appearance
+\usepackage[cm,headings]{fullpage}
+\usepackage[]{authblk} % For author affiliations
+\usepackage[]{ebgaramond} % For the Garamond font
+\usepackage[]{parskip} % For no paragraph indentation
+\usepackage[unicode]{hyperref} % For hyperlinks with Unicode support
+
+% Default packages from org-latex-default-packages-alist
+% \usepackage[utf8]{inputenc} % Input encoding for pdflatex
+\usepackage[T1]{fontenc} % Font encoding
+\usepackage{listings} % For code listings
+\usepackage{framed} % For framed text
+\usepackage{xcolor} % For shading colors
+\usepackage{graphicx} % Graphics support
+\usepackage[export]{adjustbox} % Export option for graphics
+\usepackage{etoolbox} % General programming tools for LaTeX
+\usepackage{grffile} % Support for filenames with multiple dots
+\usepackage{longtable} % Long table support
+\usepackage{wrapfig} % Wrapping text around figures
+\usepackage{rotating} % Rotate objects in the document
+\usepackage[normalem]{ulem} % Underlining and strike-through text
+\usepackage{amsmath} % Advanced math formatting
+\usepackage{textcomp} % Additional symbols
+\usepackage{amssymb} % Extra math symbols
+\usepackage{capt-of} % For captions outside floats
+\usepackage{enumerate} % Customizable enumerated lists
+\usepackage[shortlabels]{enumitem} % More list options
+\usepackage{physics} % Physics-related formatting
+\usepackage[separate-uncertainty=true,per-mode=symbol]{siunitx} % For scientific units
+\usepackage{tikz} % Drawing and diagramming
+\usepackage{esint} % Extra integral symbols
+
+
+% Title, author, and date (populated by Pandoc placeholders)
+\title{$title$}
+\author{$for(author)$$author$$sep$ \and $endfor$}
+\date{$date$}
+
+\begin{document}
+
+\maketitle
+
+$body$
+
+\end{document}

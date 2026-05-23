@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Install build dependencies
+sudo pacman -S --needed base-devel git
+
+WORKDIR="$(mktemp -d)"
+trap 'rm -rf "$WORKDIR"' EXIT
+
+cd "$WORKDIR"
+
+echo "Cloning yay repository..."
+git clone https://aur.archlinux.org/yay.git
+
+cd yay
+
+echo "Building and installing yay..."
+makepkg -si --noconfirm
+
+echo "yay installed successfully."

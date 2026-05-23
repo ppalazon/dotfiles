@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pacman -Qq > .packages-pacman.txt
+yaourt -Qe | grep local/ | awk '{print $1}' | sed 's/local\///g' > .packages-yaourt.txt

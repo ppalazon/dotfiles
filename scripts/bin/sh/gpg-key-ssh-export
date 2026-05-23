@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+KEY_INPUT="${1:-}"
+SSHCONTROL_FILE="${GNUPGHOME:-$HOME/.gnupg}/sshcontrol"
+
+[[ -n "$KEY_INPUT" ]] || {
+  echo "usage: $0 <email|keyid|fingerprint>"
+  exit 1
+}
+
+# Resolve fingerprint of target key
+FPR="$(gpg-key-fingerprint $KEY_INPUT)"
+
+if [[ -z "$FPR" ]]; then
+  echo "Error: Key not found: $KEY_INPUT"
+  exit 1
+fi
+
+echo "Target key fingerprint: $FPR"
+echo
+
+echo "User ID(s):"
+gpg --list-keys --with-colons "$FPR" 2>/dev/null \
+  | awk -F: '/^uid:/ { print "  " $10 }'
+
+echo
+
+has_auth_subkey() {
+  gpg --list-secret-keys --with-colons "$1" 2>/dev/null |
+    awk -F: '$1=="ssb" && $12 ~ /a/ {found=1} END {exit !found}'
+}
+
+if ! has_auth_subkey "$FPR"; then
+  echo "Error: No authentication subkey found for $FPR"
+  exit 1
+fi
+
+echo "SSH public key:"
+gpg --export-ssh-key $FPR
+
+echo
+echo
+
+KEYGRIP="$(
+  gpg --list-secret-keys --with-keygrip --with-colons "$FPR" 2>/dev/null |
+  awk -F: '
+    $1=="ssb" {
+      caps=$12
+      auth=(index(caps,"a") > 0)
+      next
+    }
+    $1=="grp" && auth {
+      print toupper($10)
+      exit
+    }
+  '
+)"
+
+[[ -n "${KEYGRIP:-}" ]] || {
+  echo "error: no authentication subkey found"
+  exit 1
+}
+
+echo "Using keygrip: $KEYGRIP"
+
+# Check agent knows it
+gpg-connect-agent "KEYINFO --ssh-list $KEYGRIP" /bye >/dev/null 2>&1 || {
+  echo "error: gpg-agent does not know this keygrip"
+  exit 1
+}
+
+# Ensure sshcontrol exists
+touch "$SSHCONTROL_FILE"
+chmod 600 "$SSHCONTROL_FILE"
+
+# Add if not present
+if grep -Eiq "^[[:space:]]*${KEYGRIP}([[:space:]]|$)" "$SSHCONTROL_FILE"; then
+  echo "✅ Already present in sshcontrol"
+  exit 0
+fi
+
+echo "Do you want to add this keygrip to sshcontrol? [y/N]"
+read -r REPLY
+if [[ ! "$REPLY" =~ ^[Yy]$ ]]; then
+  echo "Aborting"
+  exit 0
+fi
+
+echo "$KEYGRIP" >> "$SSHCONTROL_FILE"
+
+# Reload agent
+gpgconf --kill gpg-agent
+
+echo "✅ Added keygrip to sshcontrol"

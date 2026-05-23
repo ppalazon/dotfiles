@@ -1,0 +1,5 @@
+#/bin/bash
+
+playerctl stop
+xset dpms force off
+exec i3lock -c 888888

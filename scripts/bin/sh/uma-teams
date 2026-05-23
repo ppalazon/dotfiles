@@ -1,0 +1,6 @@
+#!/bin/bash
+
+exec /opt/teams-for-linux/teams-for-linux \
+  --class=teams-uma \
+  --user-data-dir="$HOME"/.config/teams-profile-uma \
+  "$@"

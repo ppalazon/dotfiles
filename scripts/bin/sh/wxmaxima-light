@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#GTK_THEME=Arc /usr/local/bin/wxmaxima
+GTK2_RC_FILES=/usr/share/themes/Arc/gtk-2.0/gtkrc /usr/local/bin/wxmaxima

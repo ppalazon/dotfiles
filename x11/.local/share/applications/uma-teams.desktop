@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=UMA Teams
+Exec=uma-teams %U
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/teams;
+Categories=Network;

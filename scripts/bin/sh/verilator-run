@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+verilator --cc $1 --binary --timing -Mdir ./.obj_dir -o object
+./.obj_dir/object
+# No heading:1 ends here

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+EMAIL="${1:-}"
+
+if [[ -z "$EMAIL" ]]; then
+  echo "Usage: $0 <email>"
+  exit 1
+fi
+
+# Validate email format (basic)
+if [[ ! "$EMAIL" =~ ^[^@]+@[^@]+\.[^@]+$ ]]; then
+  echo "Error: Invalid email extracted: $EMAIL"
+  exit 1
+fi
+
+EMAIL_LOWER=$(printf '%s' "$EMAIL" | tr '[:upper:]' '[:lower:]')
+LOCALPART="${EMAIL_LOWER%@*}"
+DOMAIN="${EMAIL_LOWER##*@}"
+
+HASH=$(
+  printf '%s' "$LOCALPART" \
+    | sha1sum \
+    | awk '{print $1}' \
+    | xxd -r -p \
+    | basenc --base32 \
+    | tr -d '=\n' \
+    | tr 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567' 'ybndrfg8ejkmcpqxot1uwisza345h769'
+)
+
+URL="https://${DOMAIN}/.well-known/openpgpkey/hu/${HASH}"
+
+echo "WKD URL: $URL"
+echo ""
+echo "Testing WKD lookup with gpg..."
+
+gpg -vv --auto-key-locate clear,wkd --locate-external-key $EMAIL

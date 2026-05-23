@@ -1,0 +1,7 @@
+#!/bin/bash
+
+MU_EMAIL="${MU_EMAIL:-user@example.com}"
+MU_EMAIL_DIR="${MU_EMAIL//@/-}"
+
+mu index --muhome=$HOME/.mu/$MU_EMAIL_DIR
+

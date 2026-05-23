@@ -1,0 +1,16 @@
+#!/bin/bash
+set -x
+
+CLASS_NAME="kitty-pomati"
+HUD="kitty --class $CLASS_NAME --config ~/.config/pomati/kitty.conf -e pomati"
+HUD_OPTIONS="-w 700px -h 250px -hp right -hg 20px -vp top -vg 100px -f"
+
+if i3-msg -t get_tree | grep -q $CLASS_NAME; then
+  hud-scratchpad $HUD_OPTIONS --selector "class=$CLASS_NAME"
+else
+  eval "$HUD" &
+  # Wait for the next window event
+  i3-msg -t subscribe  '[ "window" ]'
+  i3-msg '[class="'$CLASS_NAME'"] move scratchpad, border pixel 2'
+  hud-scratchpad $HUD_OPTIONS --selector "class=$CLASS_NAME"
+fi

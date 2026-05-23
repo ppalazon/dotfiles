@@ -1,0 +1,15 @@
+#!/bin/bash
+# [[file:../org/zk/20201221-personal_keyboard_layout.org::*Create a script to configure it][Create a script to configure it:1]]
+export DISPLAY=":0"
+export XAUTHORITY=$HOME/.Xauthority
+#setxkbmap -model pc82 -layout us,es -variant qwerty -option grp:menu_toggle -option ctrl:nocaps
+#setxkbmap -layout us -variant altgr-intl
+
+# Moving the ctrl key
+# https://www.emacswiki.org/emacs/MovingTheCtrlKey#h5o-7
+#setxkbmap -layout "$(setxkbmap -print | awk -F + '/xkb_symbols/ {print $2}')" -option ctrl:swapcaps     # Swap Left Control and Caps Lock
+#setxkbmap -layout "$(setxkbmap -print | awk -F + '/xkb_symbols/ {print $2}')" -option ctrl:nocaps       # Make Caps Lock a Control key
+
+
+setxkbmap -layout us -variant altgr-intl -option ctrl:swapcaps -option ctrl:nocaps
+# Create a script to configure it:1 ends here

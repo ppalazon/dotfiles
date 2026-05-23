@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+source aws-auth-codeartifact
+
+mvn clean package docker:build -Dmaven.test.skip=true

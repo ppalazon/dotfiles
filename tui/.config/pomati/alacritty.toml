@@ -1,0 +1,26 @@
+# alacritty -t pomati --config-file ~/.config/pomati/alacritty.toml -e pomati
+
+[bell]
+animation = "EaseOutExpo"
+color = "#ffffff"
+duration = 1
+
+[colors.primary]
+background = "#000000"
+foreground = "#b5b3aa"
+
+[env]
+TERM = "alacritty"
+
+[font]
+size = 70
+
+[font.offset]
+y = 0
+
+[window]
+opacity = 0.1
+
+[window.padding]
+x = 2
+y = 2

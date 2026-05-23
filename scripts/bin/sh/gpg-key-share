@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+KEY_INPUT="${1:-}"
+
+if [[ -z "$KEY_INPUT" ]]; then
+  echo "Usage: $0 <key-id-or-email>"
+  exit 1
+fi
+
+# Resolve fingerprint of target key
+FPR=$(gpg --list-keys --with-colons "$KEY_INPUT" 2>/dev/null \
+  | awk -F: '/^fpr:/ { print $10; exit }')
+
+if [[ -z "$FPR" ]]; then
+  echo "Error: Key not found: $KEY_INPUT"
+  exit 1
+fi
+
+echo "Target key fingerprint: $FPR"
+echo
+
+echo "User ID(s):"
+gpg --list-keys --with-colons "$FPR" 2>/dev/null \
+  | awk -F: '/^uid:/ { print "  " $10 }'
+
+echo
+
+gpg --armor --export "$FPR"

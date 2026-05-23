@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -euo pipefail
+
+echo "Updating system packages..."
+sudo pacman -Suy
+
+echo
+echo "Updating AUR packages..."
+paru -Suy --aur --devel
+
+echo
+echo "Cleaning up old package versions..."
+sudo paccache -k 2 -rv

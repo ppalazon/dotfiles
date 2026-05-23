@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Terminate already running bar instances
+killall -q polybar
+
+# Wait until the processes have been shut down
+while pgrep -x polybar >/dev/null; do sleep 1; done
+
+# Launch bar1 and bar2
+# DISPLAY1="$(xrandr -q | grep " connected " | grep '^eDP1\|^eDP-1\|^VGA-1\|^VGA-0\|^HDMI-A-0\|^LVDS1' | cut -d ' ' -f1)"
+# [[ ! -z "$DISPLAY1" ]] && MONITOR="$DISPLAY1" polybar completebar &
+
+# DISPLAY1="$(xrandr -q | grep " connected " | grep '^DP1\|^DP-1' | cut -d ' ' -f1)"
+# [[ ! -z "$DISPLAY1" ]] && MONITOR="$DISPLAY1" polybar completebar &
+
+# DISPLAY2="$(xrandr -q | grep " connected " | grep '^HDMI1\|^HDMI-1\|^DVI-I-1' | cut -d ' ' -f1)"
+# [[ ! -z "$DISPLAY2" ]] && MONITOR="$DISPLAY2" polybar completebar &
+
+# DISPLAY3="$(xrandr -q | grep " connected " | grep '^HDMI2\|^HDMI-2\|^DVI-I-2' | cut -d ' ' -f1)"
+# [[ ! -z "$DISPLAY3" ]] && MONITOR="$DISPLAY3" polybar completebar &
+
+PRIMARY="$(xrandr -q | grep " connected primary " | cut -d ' ' -f1)"
+[[ ! -z "$PRIMARY" ]] && MONITOR="$PRIMARY" polybar completebar & disown
+
+PRIMARY="$(xrandr -q | grep " connected " | grep -v "primary" | cut -d ' ' -f1)"
+[[ ! -z "$PRIMARY" ]] && MONITOR="$PRIMARY" polybar simplebar & disown
+
+echo "Bars launched..."

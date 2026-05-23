@@ -1,0 +1,4 @@
+#!/bin/bash
+# [[file:../org/zk/20200929130500-java_performance.org::*Java Heap Analysers scrips][Java Heap Analysers scrips:1]]
+java -jar /opt/javatools/ibm-heap-analyzer/ha457.jar
+# Java Heap Analysers scrips:1 ends here

@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+ORIGNAL_IMAGE="${1:-}"
+
+if [[ -z "$ORIGNAL_IMAGE" ]]; then
+  SCREENSHOT_DIR="${SCREENSHOT_DIR:-$HOME/pictures/screen}"
+  # Get the most recent screenshot in the screenshot directory
+  ORIGNAL_IMAGE=$(ls -t "$SCREENSHOT_DIR"/screenshot-*.png 2>/dev/null | head -n 1)
+  if [[ -z "$ORIGNAL_IMAGE" ]]; then
+    notify-send "No screenshots found" "No screenshots found in $SCREENSHOT_DIR. Please take a screenshot first."
+    exit 1
+  fi
+fi
+
+TRIMMED_FILENAME=$(basename "$ORIGNAL_IMAGE")
+DIRNAME=$(dirname "$ORIGNAL_IMAGE")
+notify-send "Editing last screenshot" "$TRIMMED_FILENAME"
+
+STEM="${TRIMMED_FILENAME%.*}"
+EXT="${TRIMMED_FILENAME##*.}"
+
+# Check stem ends with -e[0-9]+ and extract the number
+if [[ "$STEM" =~ -e([0-9]+)$ ]]; then
+  NUMBER="${BASH_REMATCH[1]}"
+  BASE="${STEM%-e*}"
+  NEW_NUMBER=$((NUMBER + 1))
+  NEW_FILENAME="$BASE-e$NEW_NUMBER.$EXT"
+else
+  BASE="$STEM"
+  NEW_FILENAME="$BASE-e1.$EXT"
+fi
+
+satty -f $ORIGNAL_IMAGE -o "$DIRNAME/$NEW_FILENAME"

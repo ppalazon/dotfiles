@@ -1,0 +1,35 @@
+#!/bin/bash
+
+container_name="xilinx-2024"
+container_path="/var/lib/machines/$container_name"
+
+auth_file=/tmp/${container_name}_xauth
+touch $auth_file
+xauth nextract - "$DISPLAY" | sed -e 's/^..../ffff/' | xauth -f "$auth_file" nmerge -
+
+if [[ -n $DBUS_SESSION_BUS_ADDRESS ]]; then # remove prefix
+    host_bus=${DBUS_SESSION_BUS_ADDRESS#unix:path=};
+else # default guess
+    host_bus=/run/user/$UID/bus;
+fi
+container_bus=/run/user/host/bus
+
+HOME_DIR=$HOME
+USER_NAME=$(id -un)
+
+sudo systemd-nspawn -D $container_path \
+  --as-pid2 \
+  --bind=$HOME_DIR/work \
+  --bind=$HOME_DIR/downloads \
+  --bind-ro=/tmp/.X11-unix/ \
+  --setenv=DISPLAY=$DISPLAY \
+  --resolv-conf=bind-uplink \
+  --user $USER_NAME \
+  --bind=${auth_file} \
+  --setenv=XAUTHORITY=${auth_file} \
+  --setenv=LANG=en_US.UTF-8 \
+  --bind-ro=$host_bus:$container_bus \
+  --setenv=DBUS_SESSION_BUS_ADDRESS=unix:path=$container_bus \
+  --bind=/run/dbus/system_bus_socket \
+  --bind=/dev/bus/usb \
+  --property=DeviceAllow='/dev/bus/usb/** rwm'

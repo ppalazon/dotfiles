@@ -1,0 +1,4 @@
+#!/bin/bash
+# [[file:../org/zk/20230228-113436-dynamodb_local.org::*Using NoSQL Workbench][Using NoSQL Workbench:1]]
+/opt/nosql-workbench/DynamoDB/NoSQL\ Workbench-linux-3.5.0.AppImage
+# Using NoSQL Workbench:1 ends here

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+KEY_INPUT="${1:-}"
+
+if [[ -z "$KEY_INPUT" ]]; then
+  echo "Usage: $0 <key-id-or-email>"
+  exit 1
+fi
+
+gpg --list-secret-keys --with-colons "$KEY_INPUT" 2>/dev/null |
+  awk -F: '
+    $1=="sec" { want_fpr=1; next }
+    $1=="fpr" && want_fpr { print $10; exit }
+  '

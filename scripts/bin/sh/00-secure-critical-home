@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "🔐 Securing critical folders..."
+
+secure_dir() {
+  local dir="$1"
+
+  if [[ -d "$dir" ]]; then
+    echo "➡️ Securing $dir"
+
+    chmod 700 "$dir"
+    find "$dir" -type d -exec chmod 700 {} +
+    find "$dir" -type f -exec chmod 600 {} +
+
+  else
+    echo "➡️ Creating and securing $dir"
+    mkdir -p "$dir"
+    chmod 700 "$dir"
+  fi
+}
+
+secure_dir "$HOME/.ssh"
+secure_dir "$HOME/.gnupg"
+secure_dir "$HOME/.local/share/keyrings"
+secure_dir "$HOME/.aws"
+secure_dir "$HOME/.keepassxc"
+secure_dir "$HOME/.password-store"
+secure_dir "$HOME/.secrets-backup"
+secure_dir "$HOME/.bash.d"
+secure_dir "$HOME/.bash_completions.d"
+
+echo "✅ Done."

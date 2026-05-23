@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[[ $# -eq 0 ]] && { echo "Usage: $0 <log-group-name>"; exit 1; }
+
+aws logs tail $1 --follow --format short

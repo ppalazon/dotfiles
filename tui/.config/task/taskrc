@@ -1,0 +1,21 @@
+# [Created by task 3.4.2 3/19/2026 11:05:49]
+# data.location=~/.task
+
+# To use the default location of the XDG directories,
+# move this configuration file from ~/.taskrc to ~/.config/task/taskrc and update location config as follows:
+
+news.version=3.4.2
+data.location=~/.local/share/task
+hooks.location=~/.config/task/hooks
+
+# include /usr/share/doc/task/rc/dark-16.theme
+include colors.theme
+
+uda.taskwarrior-tui.keyconfig.quit=Q
+
+uda.taskwarrior-tui.selection.indicator=>>
+uda.taskwarrior-tui.selection.italic=yes
+uda.taskwarrior-tui.selection.reverse=yes
+
+uda.url.type=string
+uda.url.label=URL

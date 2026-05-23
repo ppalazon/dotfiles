@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Select a window with the mouse
+info=$(xprop \
+  WM_CLASS \
+  WM_NAME \
+  WM_WINDOW_ROLE \
+  WM_TRANSIENT_FOR)
+
+# Copy to clipboard
+printf '%s\n' "$info" | xclip -selection clipboard
+
+# Send desktop notification
+notify-send "X11 Window Info Copied" "$info"
+
+# Also print it
+echo "$info"

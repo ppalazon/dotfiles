@@ -1,0 +1,112 @@
+#!/bin/bash
+set -euo pipefail
+
+# Getting an input day
+INPUT_DATE="${1:-}"
+if [[ -n "$INPUT_DATE" ]]; then
+    if ! date -d "$INPUT_DATE" >/dev/null 2>&1; then
+        echo "Invalid date format. Use YYYY-MM-DD"
+        exit 1
+    fi
+fi
+
+if [[ -n "$INPUT_DATE" ]]; then
+    DATE=$(date -d "$INPUT_DATE" +'%Y%m%d')
+    APOD_DATE=$(date -d "$INPUT_DATE" +'%y%m%d')
+    APOD_URL="https://apod.nasa.gov/apod/ap${APOD_DATE}.html"
+else
+    DATE=$(date +'%Y%m%d')
+    APOD_URL="https://apod.nasa.gov/apod/"
+fi
+
+
+# Set this to 'yes' to save a description (to ~/description.txt) from APOD page
+GET_DESCRIPTION="yes"
+# Set this to the directory you want pictures saved
+PICTURES_DIR=~/pictures/apod
+# Set this to the directory you want description saved
+DESCRIPTION_DIR=~/pictures/apod
+
+# ********************************
+# *** FUNCTIONS
+# ********************************
+function get_page {
+    echo "Downloading page: $APOD_URL"
+    wget "$APOD_URL" --quiet -O /tmp/apod.html
+    grep -m 1 -e png -e jpg /tmp/apod.html | \
+      sed -e 's/<//' -e 's/>//' -e 's/.*=//' -e 's/"//g' \
+          -e 's/^/https:\/\/apod.nasa.gov\/apod\//' > /tmp/pic_url
+}
+
+function save_description {
+    if [ ${GET_DESCRIPTION} == "yes" ]; then
+        echo "Getting description from page"
+        # Get description
+        if [ -e $DESCRIPTION_DIR/${DATE}_apod.txt ]; then
+            rm $DESCRIPTION_DIR/${DATE}_apod.txt
+        fi
+
+        if [ ! -e /tmp/apod.html ]; then
+            get_page
+        fi
+
+        echo "Parsing description"
+        sed -n '/<b> Explanation: <\/b>/,/<p> <center>/p' /tmp/apod.html |
+        sed -e :a -e 's/<[^>]*>//g;/</N;//ba' |
+        grep -Ev 'Explanation:' |
+        tr '\n' ' ' |
+        sed 's/  /\n\n/g' |
+        awk 'NF { print $0 "\n" }' |
+        sed 's/^[ \t]*//' |
+        sed 's/[ \t]*$//' > $DESCRIPTION_DIR/description.txt
+    fi
+}
+
+function clean_up {
+    # Clean up
+    echo "Cleaning up temporary files"
+    if [ -e "/tmp/pic_url" ]; then
+        rm /tmp/pic_url
+    fi
+
+    if [ -e "/tmp/apod.html" ]; then
+        rm /tmp/apod.html
+    fi
+}
+
+# ********************************
+# *** MAIN
+# ********************************
+echo "===================="
+echo "== APOD Wallpaper =="
+echo "===================="
+# Set date
+
+mkdir -p $PICTURES_DIR
+
+get_page
+PICURL=$(/bin/cat /tmp/pic_url)
+
+echo  "Picture URL is: ${PICURL}"
+
+# Extract extension
+EXT="${PICURL##*.}"
+EXT="${EXT%%\?*}"
+FILENAME="${DATE}_apod.${EXT}"
+
+# Get the image
+wget --quiet $PICURL -O $PICTURES_DIR/$FILENAME
+
+# Download the description and save it
+save_description
+
+# Set the wallpaper
+feh --bg-fill $PICTURES_DIR/$FILENAME
+
+# Blur the image for lock screen
+magick $PICTURES_DIR/$FILENAME -blur 0x8 /tmp/${DATE}_apod_blur.${EXT}
+
+# Copy to use on lightdm
+cp /tmp/${DATE}_apod_blur.${EXT} /usr/share/backgrounds/apod/apod
+
+clean_up

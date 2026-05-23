@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+# Temporary file to hold ldconfig output
+TEMP_FILE=$(mktemp)
+
+# Run ldconfig and capture its output
+sudo ldconfig 2>&1 | tee "$TEMP_FILE"
+
+# Function to parse ldconfig output and check for issues
+check_ldconfig_issues() {
+    echo "Checking ldconfig output for issues..."
+
+    while IFS= read -r line; do
+        # Look for lines that indicate an empty or problematic .so file
+        if [[ "$line" =~ ^.*ldconfig:\ File.*is\ empty ]]; then
+            file=$(echo "$line" | awk '{print $3}')
+            echo "Empty library file found: $file"
+
+            # Check package ownership
+            package=$(pacman -Qo "$file" 2>/dev/null)
+            if [ $? -eq 0 ]; then
+                echo "Owned by package: $package"
+            else
+                echo "Not owned by any package."
+            fi
+        fi
+    done < "$TEMP_FILE"
+}
+
+# Run the function
+check_ldconfig_issues
+
+# Clean up
+rm "$TEMP_FILE"
+# No heading:1 ends here

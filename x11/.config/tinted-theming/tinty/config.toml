@@ -1,0 +1,74 @@
+shell = "bash -c '{}'"
+
+# https://tinted-theming.github.io/tinted-gallery/
+default-scheme = "base24-tomorrow-night"
+
+[[items]]
+name = "tinted-shell"
+path = "https://github.com/tinted-theming/tinted-shell"
+themes-dir = "scripts"
+hook = "cp -f %f ~/dotfiles/base/.bash_colors.sh && . %f"
+supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-terminal"
+themes-dir = "themes/kitty"
+hook = "cp -f %f ~/dotfiles/x11/.config/kitty/colors.conf"
+supported-systems = ["base16", "base24"]
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-dunst"
+name = "tinted-dunst"
+themes-dir = "themes"
+hook = "cp -f %f ~/dotfiles/x11/.config/dunst/color.dunstrc"
+supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-fzf"
+name = "tinted-fzf"
+themes-dir = "sh"
+hook = "cp -f %f ~/dotfiles/base/.bash_colors_fzf.sh"
+supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/base16-i3"
+name = "tinted-i3"
+themes-dir = "themes"
+hook = "cp -f %f ~/dotfiles/x11/.config/i3/color-tinted.config"
+supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/base16-polybar"
+name = "tinted-polybar"
+themes-dir = "colors"
+hook = "cp -f %f ~/dotfiles/x11/.config/polybar/color-tinted.ini"
+supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/base16-rofi"
+name = "tinted-rofi"
+themes-dir = "themes"
+hook = "cp -f %f ~/dotfiles/x11/.config/rofi/color-tinted.rasi"
+supported-systems = ["base16"]
+
+[[items]]
+path = "https://github.com/tinted-theming/base16-xresources"
+name = "tinted-xresources"
+themes-dir = "xresources"
+hook = "cp -f %f ~/dotfiles/x11/.Xresources-colors-tinted"
+supported-systems = ["base16"]
+
+#[[items]]
+#path = "https://github.com/tinted-theming/tinted-vscode"
+#name = "tinted-vscode"
+#themes-dir = "themes/base16"
+#hook = ""
+#supported-systems = ["base16", "base24"]
+
+#[[items]]
+#name = "base16-vim"
+#path = "https://github.com/tinted-theming/base16-vim"
+#themes-dir = "colors"
+#supported-systems = ["base16"]
+# Look at USAGE.md for more information on sourcing the generated file in vim

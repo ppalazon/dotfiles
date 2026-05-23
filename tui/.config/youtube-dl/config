@@ -1,0 +1,25 @@
+# Lines starting with # are comments
+
+# Always extract audio
+# -x
+
+# Do not copy the mtime
+--no-mtime
+
+# Use this proxy
+#--proxy 127.0.0.1:3128
+
+# Video format preference
+-f 'bestvideo[height<=720]+bestaudio/best[height<=720]'
+# -f 'best'
+
+# Save all videos under Movies directory in your home directory
+--restrict-filenames
+-o ~/videos/yt/%(title)s.%(ext)s
+
+# Using filenames on playlists
+# -o '%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s'
+
+# Set username
+# --username ventrescacontomate@gmail.com
+# --password '$(pass personal/youtube/ventresca-pass)'

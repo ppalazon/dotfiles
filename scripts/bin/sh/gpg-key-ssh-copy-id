@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+KEY_INPUT="${1:-}"
+REMOTE="${2:-}"
+
+[[ -n "$KEY_INPUT" && -n "$REMOTE" ]] || {
+  echo "Usage: $0 <email|keyid|fingerprint> <user@host>"
+  exit 1
+}
+
+# Resolve fingerprint
+FPR="$(gpg-key-fingerprint $KEY_INPUT)"
+
+[[ -n "$FPR" ]] || {
+  echo "Error: key not found: $KEY_INPUT"
+  exit 1
+}
+
+# Export SSH public key
+PUBKEY="$(gpg --export-ssh-key "$FPR")"
+
+[[ -n "$PUBKEY" ]] || {
+  echo "Error: failed to export SSH public key for $FPR"
+  exit 1
+}
+
+echo "Target key fingerprint: $FPR"
+echo
+echo "SSH public key:"
+echo "$PUBKEY"
+echo
+
+read -r -p "Install this key on $REMOTE? [y/N] " REPLY
+[[ "$REPLY" =~ ^[Yy]$ ]] || {
+  echo "Aborting"
+  exit 0
+}
+
+printf '%s\n' "$PUBKEY" | ssh "$REMOTE" '
+  set -eu
+
+  read -r pubkey
+
+  ssh_dir="$HOME/.ssh"
+  auth_keys="$ssh_dir/authorized_keys"
+
+  umask 077
+  mkdir -p "$ssh_dir"
+  touch "$auth_keys"
+
+  if grep -qxF "$pubkey" "$auth_keys"; then
+    echo "Key already installed"
+    exit 0
+  fi
+
+  printf "%s\n" "$pubkey" >> "$auth_keys"
+  echo "Key installed successfully"
+'

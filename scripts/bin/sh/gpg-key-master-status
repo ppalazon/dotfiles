@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+KEY_INPUT="${1:-}"
+
+if [[ -z "$KEY_INPUT" ]]; then
+  echo "Usage: $0 <key-id-or-email> "
+  exit 1
+fi
+
+# Get fingerprint (canonical ID)
+FPR=$(gpg-key-fingerprint "$KEY_INPUT")
+
+if [[ -z "$FPR" ]]; then
+  echo "Error: Key not found: $KEY_INPUT"
+  exit 1
+fi
+echo "Found key fingerprint: $FPR"
+echo
+
+HAS_MASTER_KEY=$(gpg --list-secret-keys --with-colons $FPR | awk -F: '/^sec/ {print $15; exit}')
+
+if [ "$HAS_MASTER_KEY" = "#" ]; then
+  echo "✅ Your master key is currently offline."
+  exit 0
+else
+  echo "⚠️ Your master key is currently online."
+  exit 1
+fi

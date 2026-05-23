@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+#cd /usr/lib/configuradorfnmt
+
+CF=/opt/configuradorfnmt
+CF_LIB=${CF}/lib
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CF_LIB}
+export PATH="${CF}/jre/bin/:$PATH"
+export _JAVA_OPTIONS='-Dawt.useSystemAAFontSettings=lcd -Dswing.aatext=true'
+
+java -classpath ${CF_LIB}/configuradorfnmt.jar:${CF_LIB}/bcpkix-fips.jar:${CF_LIB}/bc-fips.jar:${CF_LIB}/bcutil-fips.jar es.gob.fnmt.cert.certrequest.CertRequest $*

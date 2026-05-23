@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# https://piechowski.io/post/git-commands-before-reading-code/
+
+git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c

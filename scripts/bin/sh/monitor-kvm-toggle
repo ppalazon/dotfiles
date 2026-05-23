@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Use ddcutil detect to find the display number for the monitor with the specified serial number, then toggle its input source between DisplayPort and HDMI using VCP code 0x60.
+MONITOR_SERIAL="411NTMX1L091"
+
+# Using ddcuit -d $DISPLAY_NUM getvcp 60 to read the current input source, then setvcp 60 to switch between the two inputs.
+INPUT_A=0x0f   # DisplayPort-1 (Desktop)
+INPUT_B=0x10   # DisplayPort-2 (USB-C)
+
+# Find display number by serial
+DISPLAY_NUM=$(
+  ddcutil detect --terse |
+  awk -F ' ' -v serial="$MONITOR_SERIAL" '
+    /Display/ {disp=$2}
+    $0 ~ serial {print disp}
+  '
+)
+
+if [[ -z "$DISPLAY_NUM" ]]; then
+  echo "Monitor not found"
+  exit 1
+fi
+
+CURRENT=$(
+  ddcutil --display "$DISPLAY_NUM" getvcp 60 |
+  grep -o 'sl=0x[0-9a-fA-F]*' |
+  cut -d= -f2
+)
+
+if [[ "$CURRENT" == "$INPUT_A" ]]; then
+  echo "Switching to HDMI"
+  ddcutil --display "$DISPLAY_NUM" setvcp 60 "$INPUT_B"
+else
+  echo "Switching to DisplayPort"
+  ddcutil --display "$DISPLAY_NUM" setvcp 60 "$INPUT_A"
+fi

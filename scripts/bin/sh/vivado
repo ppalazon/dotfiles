@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# source /tools/Xilinx/Vivado/2024.2/settings64.sh
+# vivado $@
+
+
+VIVADO_PATH=$HOME/tools/xilinx/2025.2.1/Vivado
+VIVADO_WORK_DIR="$HOME/work/hw/vivado"
+
+cd $VIVADO_WORK_DIR
+
+export J2D_D3D=false
+# export _JAVA_OPTIONS="-Dswing.systemlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dswing.defaultlaf=com.sun.java.swing.plaf.gtk.GTKLookAndFeel -Dsun.java2d.dpiaware=true -Dsun.java2d.uiScale=2.5 -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dsun.java2d.xrender=true"
+export _JAVA_OPTIONS="-Dsun.java2d.dpiaware=true -Dsun.java2d.uiScale=2.5 -Dawt.useSystemAAFontSettings=on -Dswing.aatext=true -Dsun.java2d.xrender=true"
+export GDK_SCALE=2
+export GDK_DPI_SCALE=2.0
+export SWT_GTK3=0
+wmname LG3
+source $VIVADO_PATH/settings64.sh
+
+# change to a temp dir, vivado will create logfiles and journal files here
+# cd $VIVADO_TMP_DIR
+
+export VIVADO_LOG_FILE="$HOME/.Xilinx/Vivado/vivado.log"
+export VIVADO_JOURNAL_FILE="$HOME/.Xilinx/Vivado/vivado.jou"
+
+$VIVADO_PATH/bin/vivado "$@"

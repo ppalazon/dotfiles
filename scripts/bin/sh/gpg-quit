@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "Killing gpg-agent to apply new configuration"
+gpgconf --kill gpg-agent

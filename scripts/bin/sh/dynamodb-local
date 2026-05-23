@@ -1,0 +1,4 @@
+#!/bin/bash
+# [[file:../org/zk/20230228-113436-dynamodb_local.org::*Getting access to local ~dynamodb~][Getting access to local ~dynamodb~:1]]
+aws dynamodb $@ --endpoint-url=http://localhost:8000 --region eu-west-1 --output json
+# Getting access to local ~dynamodb~:1 ends here

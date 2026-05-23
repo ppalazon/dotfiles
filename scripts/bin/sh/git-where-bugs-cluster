@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# https://piechowski.io/post/git-commands-before-reading-code/
+
+git log -i -E --grep="fix|bug|broken" --name-only --format='' | sort | uniq -c | sort -nr | head -20

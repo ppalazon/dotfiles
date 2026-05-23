@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# [[file:../org/zk/20241107-081548-x_heep_riscv_microcontroller.org::*Create an dev environment][Create an dev environment:1]]
+conda activate core-v-mini-mcu
+
+export CC=gcc-13 CXX=g++-13
+
+export RISCV=/home/$USER/tools/riscv
+#export RISCV=/home/$USER/tools/corev
+
+export VERILATOR_VERSION=4.210
+export PATH=/home/$USER/tools/verilator/$VERILATOR_VERSION/bin:$PATH
+
+export VERIBLE_VERSION=v0.0-3622-g07b310a3
+export PATH=/home/$USER/tools/verible/$VERIBLE_VERSION/bin:$PATH
+
+export PATH=/home/$USER/tools/openocd/bin:$PATH
+# Create an dev environment:1 ends here

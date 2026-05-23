@@ -1,0 +1,8 @@
+#!/bin/bash
+# [[file:../org/zk/20210605-iot_management_with_vert_x.org::*Environment][Environment:2]]
+set -e
+multipass $1 things
+multipass $1 devices
+multipass $1 gateway
+multipass $1 mqtt
+# Environment:2 ends here

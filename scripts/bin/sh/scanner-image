@@ -1,0 +1,6 @@
+#!/bin/bash
+set -x
+dir=~/pictures/scanner
+mkdir -p $dir
+d=$(date +%Y%m%dT%H%M%S)
+scanimage --device "airscan:e0:Brother MFC-L2710DW series" --format=png --output-file $dir/$d.png --progress

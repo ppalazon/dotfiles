@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 2 ]]; then
+  echo "Usage: $0 <pacman|yay|paru> <package-list-file>"
+  exit 1
+fi
+
+INSTALLER="$1"
+PKGLIST="$2"
+
+if [[ ! -f "$PKGLIST" ]]; then
+  echo "Package list not found: $PKGLIST"
+  exit 1
+fi
+
+if ! command -v "$INSTALLER" >/dev/null 2>&1; then
+  echo "Installer not found: $INSTALLER"
+  exit 1
+fi
+
+# Get currently installed packages
+INSTALLED="$(pacman -Qq)"
+
+# Filter packages that are not already installed
+mapfile -t MISSING_PKGS < <(
+  grep -vxFf <(printf "%s\n" "$INSTALLED") "$PKGLIST" || true
+)
+
+if (( ${#MISSING_PKGS[@]} == 0 )); then
+  echo "All packages are already installed."
+  exit 0
+fi
+
+echo "Installing missing packages using $INSTALLER"
+
+if [[ "$INSTALLER" == "pacman" ]]; then
+  sudo pacman -S --needed "${MISSING_PKGS[@]}"
+else
+  "$INSTALLER" -S --needed "${MISSING_PKGS[@]}"
+fi

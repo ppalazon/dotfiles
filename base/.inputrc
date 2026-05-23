@@ -1,0 +1,8 @@
+set show-all-if-ambiguous on
+set visible-stats on
+set colored-stats on
+set colored-completion-prefix on
+
+"\es":"\C-asudo \C-e"
+"\e\C-b":"\C-e > /dev/null 2>&1 &\C-m"
+

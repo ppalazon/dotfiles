@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# https://piechowski.io/post/git-commands-before-reading-code/
+
+git shortlog -sn --no-merges

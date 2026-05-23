@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+HOST=$(hostname)
+
+ssh data "mkdir -p /data/backup/$HOST"
+
+echo "Syncing data to backup server for host $HOST..."
+
+echo "Syncing m2 repository..."
+rsync -avzP --delete ~/.m2/ data:/data/backup/$HOST/m2/
+
+echo "Syncing org directory..."
+rsync -avzP --delete ~/org/ data:/data/backup/$HOST/org/
+
+echo "Syncing obsidian directory..."
+rsync -avzP --delete ~/obsidian/ data:/data/backup/$HOST/obsidian/
+
+echo "Syncing work directory..."
+rsync -avzP --delete ~/work/ data:/data/backup/$HOST/work/
+
+echo "Syncing secrets backup..."
+rsync -azvP ~/.secrets-backup/ data:/data/backup/$HOST/secrets/
+rsync -avzP ~/.gnupg/backups/ data:/data/backup/$HOST/secrets/gnupg/

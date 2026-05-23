@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+KEY_INPUT="${1:-}"
+KEYSERVER="${2:-}"
+
+if [[ -z "$KEY_INPUT" ]]; then
+  echo "Usage: $0 <key-id-or-email> [keyserver]"
+  exit 1
+fi
+
+# Get fingerprint (canonical ID)
+FPR=$(gpg-key-fingerprint "$KEY_INPUT")
+
+if [[ -z "$FPR" ]]; then
+  echo "Error: Key not found: $KEY_INPUT"
+  exit 1
+fi
+
+echo "Found key fingerprint: $FPR"
+
+if [[ -n "$KEYSERVER" ]]; then
+  # Basic validation
+  if [[ ! "$KEYSERVER" =~ ^hkps?:// ]]; then
+    echo "Error: Keyserver must start with hkps:// or http://"
+    exit 1
+  fi
+  echo "Using keyserver: $KEYSERVER"
+else
+  echo "Using default keyserver (from GnuPG config)"
+fi
+
+echo
+echo "⚠️  This will publish your key (and signatures) publicly."
+read -rp "Continue? (y/N) " CONFIRM
+
+if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
+  echo "Aborting."
+  exit 0
+fi
+
+echo
+echo "🚀 Sending key..."
+
+if [[ -n "$KEYSERVER" ]]; then
+  gpg --keyserver "$KEYSERVER" --send-keys "$FPR"
+else
+  gpg --send-keys "$FPR"
+fi
+
+echo
+echo "✅ Done."

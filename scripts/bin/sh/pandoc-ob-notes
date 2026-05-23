@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# [[file:../org/zk/20250314-211056-pandoc_exporters.org::*Pandoc - PDF][Pandoc - PDF:1]]
+set -xe
+
+DIR="$(pwd)"
+
+if [[ -f "$1" && "$1" == *.md ]]; then
+  echo "Valid Markdown file: $1"
+else
+  echo "Error: File does not exist or is not a .md file"
+  exit 1
+fi
+
+output="${1%.md}-notes.pdf"
+
+echo "Exporting to $output"
+
+# pandoc --resource-path="${currentDir}" --resource-path="${attachmentFolderPath}" --lua-filter="${luaDir}/pdf.lua" --template notes -o "${outputPath}" -t pdf
+
+#        --lua-filter="wikilink-url-filter.lua" \
+#        --bibliography="my_library.bib" --csl="~/.pandoc/resources/ieee.csl" --citeproc \
+
+pandoc --resource-path="./" \
+       --resource-path="attachments" \
+       --resource-path="$HOME/.pandoc/resources" \
+       --lua-filter="pdf.lua" \
+       -o "${output}" \
+       --citeproc --template notes -t pdf --pdf-engine=pdflatex $1
+
+zathura $output 2> /dev/null &
+# Pandoc - PDF:1 ends here

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+PKG_EXPORT_DIR="$HOME/.pacman"
+mkdir -p "$PKG_EXPORT_DIR"
+
+echo "Exporting list of explicitly installed packages to $PKG_EXPORT_DIR/pkglist.txt"
+mkdir -p "$PKG_EXPORT_DIR"
+pacman -Qqetn > "$PKG_EXPORT_DIR/pkglist_repo.txt"
+echo "Exporting list of AUR packages to $PKG_EXPORT_DIR/pkglist_aur.txt"
+pacman -Qqem > "$PKG_EXPORT_DIR/pkglist_aur.txt"

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+set -euo pipefail
+
+KEY_INPUT="${1:-secret}" # 'secret' or 'public'
+
+if [[ -z "$KEY_INPUT" ]]; then
+  echo "Usage: $0 <key-id-or-email>"
+  exit 1
+fi
+
+if [[ "$KEY_INPUT" != "secret" && "$KEY_INPUT" != "public" ]]; then
+  echo "Error: Invalid key type: $KEY_INPUT"
+  echo "Usage: $0 <key-id-or-email>"
+  exit 1
+fi
+
+if [[ "$KEY_INPUT" == "secret" ]]; then
+  echo "Listing secret keys..."
+  gpg --list-secret-keys --keyid-format=long
+  exit 0
+else
+  echo "Listing public keys..."
+  gpg --list-keys --keyid-format=long
+  exit 0
+fi
+
+exit 0

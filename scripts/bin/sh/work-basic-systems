@@ -1,0 +1,28 @@
+#!/bin/bash
+set -x
+
+action=$1
+if [[ $action == "" ]]; then
+    action="start"
+fi
+
+sudo systemctl $action mysqld.service
+sudo systemctl $action dnsmasq-dev.service
+sudo systemctl $action consul-agent.service
+sudo systemctl $action consul-registrator.service
+sudo systemctl $action traefik.service
+# sudo systemctl $action hugo-zk.service
+sudo systemctl $action hugo-blog.service
+sudo systemctl $action hugo-atr-eng.service
+sudo systemctl $action fake-docs.service
+sudo systemctl $action whoami.service
+sudo systemctl $action sso-ui.service
+sudo systemctl $action sso-api.service
+sudo systemctl $action whoami-auth.service
+sudo systemctl $action httpbin.service
+# sudo systemctl $action n8n.service
+sudo systemctl $action whoami-devops.service
+sudo systemctl $action whoami-delegate.service
+sudo systemctl $action whoami-dev.service
+sudo systemctl $action fake-site.service
+sudo systemctl $action innoticate-api.service

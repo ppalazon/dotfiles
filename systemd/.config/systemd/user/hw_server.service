@@ -1,0 +1,23 @@
+[Unit]
+Description=Xilinx hw_server (Vivado 2025.2.1)
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+
+ExecStart=/bin/bash -lc 'exec $HOME/tools/xilinx/2025.2.1/Vivado/bin/hw_server'
+
+Restart=on-failure
+RestartSec=2
+
+StandardOutput=journal
+StandardError=journal
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=default.target

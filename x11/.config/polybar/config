@@ -1,0 +1,644 @@
+include-file = ./color-tinted.ini
+
+
+[colors]
+foreground = ${colors.base05}
+background = ${colors.base00}
+foreground-inverse = ${colors.base00}
+background-inverse = ${colors.base0B}
+foreground-faded = ${colors.base0B}
+background-raised = ${colors.base00}
+foreground-prefix = ${colors.base0B}
+
+warning = ${colors.base0A}
+alert = ${colors.base08}
+active-led = ${colors.base0D}
+
+[bar/completebar]
+;monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR}
+width = 100%
+height = 23
+;offset-x = 1%
+;offset-y = 1%
+radius = 0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+line-color = ${colors.foreground}
+
+border-size = 0
+border-color = #00000000
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+font-0 = monospace:size=12
+
+;tray-position = right
+;tray-padding = 1
+;tray-transparent = true
+;tray-background = ${colors.background}
+
+;wm-restack = bspwm
+;wm-restack = i3
+
+;override-redirect = true
+
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
+
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+modules-left = i3
+; modules-center = xwindow
+modules-center = music pulseaudio pomo
+modules-right = xkeyboard filesystem memory cpu wlan eth publicip battery temperature weather date
+
+[bar/simplebar]
+;monitor = ${env:MONITOR:HDMI-1}
+monitor = ${env:MONITOR}
+width = 100%
+height = 23
+;offset-x = 1%
+;offset-y = 1%
+radius = 0
+fixed-center = true
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+line-color = ${colors.foreground}
+
+border-size = 0
+border-color = #00000000
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 1
+module-margin-right = 2
+
+font-0 = monospace:size=12
+
+;tray-position = right
+;tray-padding = 1
+;tray-transparent = true
+;tray-background = ${colors.background}
+
+;wm-restack = bspwm
+;wm-restack = i3
+
+;override-redirect = true
+
+;scroll-up = bspwm-desknext
+;scroll-down = bspwm-deskprev
+
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+modules-left = i3
+modules-center = music pulseaudio
+modules-right = xkeyboard filesystem memory cpu battery temperature weather date systray
+
+[module/systray]
+# https://polybar.readthedocs.io/en/latest/user/modules/tray.html#
+type = internal/tray
+format = <tray>
+format-margin = 8px
+tray-spacing = 8px
+              
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:20:...%
+
+[module/xkeyboard]
+type = internal/xkeyboard
+blacklist-0 = num lock
+
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-prefix}
+
+label-layout = %layout%
+
+label-indicator-padding = 2
+label-indicator-margin = 1
+label-indicator-background = ${colors.warning}
+label-indicator-underline = ${colors.warning}
+
+[module/filesystem]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+
+format-mounted-prefix=" "
+format-unmounted-prefix=" "
+format-mounted-prefix-foreground = ${colors.foreground-prefix}
+format-unmounted-prefix-foreground = ${colors.foreground-prefix}
+format-mounted = <label-mounted>
+format-unmounted = <label-unmounted>
+
+label-mounted = %free%
+label-unmounted = %mountpoint% not mounted
+label-unmounted-foreground = ${colors.foreground-inverse}
+
+click-left = Thunar
+
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %index%
+label-focused-background = ${colors.background-inverse}
+label-focused-underline= ${colors.foreground}
+label-focused-padding = 2
+
+label-occupied = %index%
+label-occupied-padding = 2
+
+label-urgent = %index%!
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+label-empty = %index%
+label-empty-foreground = ${colors.foreground-inverse}
+label-empty-padding = 2
+
+; Separator in between workspaces
+; label-separator = |
+
+[module/i3]
+type = internal/i3
+
+format = <label-state> <label-mode>
+index-sort = true
+wrapping-scroll = false
+
+pin-workspaces = true
+strip-wsnumbers = true
+fuzzy-match = true
+
+; Workspace icons
+ws-icon-0 = vv;
+ws-icon-1 = browser;
+ws-icon-2 = code;
+ws-icon-3 = spotify;
+ws-icon-4 = comm;
+ws-icon-default = 
+
+
+; ---- MODE (resize etc) ----
+label-mode-padding = 2
+label-mode-foreground = ${colors.foreground-inverse}
+label-mode-background = ${colors.background-inverse}
+
+
+; ---- FOCUSED workspace ----
+label-focused = %index% %icon%
+label-focused-padding = 2
+label-focused-foreground = ${colors.foreground-inverse}
+label-focused-background = ${colors.background-inverse}
+; label-focused-underline = ${colors.active-led}
+
+
+; ---- UNFOCUSED workspace ----
+label-unfocused = %index% %icon%
+label-unfocused-padding = 2
+label-unfocused-foreground = ${colors.foreground-faded}
+label-unfocused-background = ${colors.background}
+
+
+; ---- VISIBLE workspace (other monitor) ----
+label-visible = %index% %icon%
+label-visible-padding = 2
+label-visible-foreground = ${colors.foreground-inverse}
+label-visible-background = ${colors.background-inverse}
+label-visible-underline = ${colors.foreground-prefix}
+
+
+; ---- URGENT workspace ----
+label-urgent = %index% %icon%
+label-urgent-padding = 2
+label-urgent-foreground = ${colors.background}
+label-urgent-background = ${colors.alert}
+
+
+; optional separator
+; label-separator = |
+
+[module/mpd]
+type = internal/mpd
+format-online = <label-song>  <icon-prev> <icon-stop> <toggle> <icon-next>
+
+icon-prev = 
+icon-stop = 
+icon-play = 
+icon-pause =
+icon-next = 
+
+label-song-maxlen = 25
+label-song-ellipsis = true
+
+[module/xbacklight]
+type = internal/xbacklight
+
+format = <label> <bar>
+label =  %percentage%%
+
+bar-width = 7
+bar-indicator =
+bar-indicator-foreground = #fff
+bar-indicator-font = 2
+bar-fill = ─
+bar-fill-font = 2
+bar-fill-foreground = #9f78e1
+bar-empty = ─
+bar-empty-font = 2
+bar-empty-foreground = ${colors.foreground-inverse}
+
+[module/backlight-acpi]
+inherit = module/xbacklight
+type = internal/backlight
+card = intel_backlight
+
+[module/cpu]
+type = internal/cpu
+interval = 2
+format = <label> <ramp-coreload>
+format-prefix = 
+format-prefix-foreground=${colors.foreground-prefix}
+label = %percentage:2%%
+
+ramp-coreload-0 = ▁
+ramp-coreload-0-foreground = ${colors.base0B}
+ramp-coreload-1 = ▂
+ramp-coreload-1-foreground = ${colors.base0B}
+ramp-coreload-2 = ▃
+ramp-coreload-2-foreground = ${colors.base0B}
+ramp-coreload-3 = ▄
+ramp-coreload-3-foreground = ${colors.base0A}
+ramp-coreload-4 = ▅
+ramp-coreload-4-foreground = ${colors.base0A}
+ramp-coreload-5 = ▆
+ramp-coreload-5-foreground = ${colors.base09}
+ramp-coreload-6 = ▇
+ramp-coreload-6-foreground = ${colors.base08}
+ramp-coreload-7 = █
+ramp-coreload-7-foreground = ${colors.base08}
+
+[module/memory]
+type = internal/memory
+interval = 2
+format-prefix = " "
+format-prefix-foreground=${colors.foreground-prefix}
+label = %percentage_used%%
+
+[module/wlan]
+type = internal/network
+interface = wlan0
+interval = 3.0
+
+format-connected-prefix=" "
+; format-disconnected-prefix=" "
+format-connected-prefix-foreground=${colors.foreground-prefix}
+; format-disconnected-prefix-foreground=${colors.foreground-prefix}
+
+format-connected = <ramp-signal> <label-connected>
+label-connected = %essid:0:10:..%%downspeed:9% %local_ip%
+
+; format-disconnected = down
+
+;ramp-signal-foreground = ${colors.foreground-prefix}
+ramp-signal-0 = ▁
+ramp-signal-0-foreground = ${colors.base08}
+ramp-signal-1 = ▂
+ramp-signal-1-foreground = ${colors.base08}
+ramp-signal-2 = ▃
+ramp-signal-2-foreground = ${colors.base09}
+ramp-signal-3 = ▄
+ramp-signal-3-foreground = ${colors.base09}
+ramp-signal-4 = ▅
+ramp-signal-4-foreground = ${colors.base0A}
+ramp-signal-5 = ▆
+ramp-signal-5-foreground = ${colors.base0A}
+ramp-signal-6 = ▇
+ramp-signal-6-foreground = ${colors.base0B}
+ramp-signal-7 = █
+ramp-signal-7-foreground = ${colors.base0B}
+
+click-left = /usr/bin/nm-connection-editor
+
+[module/eth]
+type = internal/network
+interface = eth0
+interval = 3.0
+
+; format-connected-underline = ${colors.base0B}
+format-connected-prefix = ""
+format-connected-prefix-foreground=${colors.foreground-prefix}
+format-disconnected-prefix-foreground=${colors.foreground-prefix}
+label-connected = %downspeed:9% %local_ip%
+
+format-disconnected =
+;format-disconnected = <label-disconnected>
+;format-disconnected-underline = ${self.format-connected-underline}
+;label-disconnected = %ifname% disconnected
+;label-disconnected-foreground = ${colors.foreground-inverse}
+
+click-left = nm-connection-editor
+
+[module/publicip]
+type = custom/script
+exec = ~/bin/sh/ip-finder
+tail = true
+
+[module/date]
+type = internal/date
+interval = 1
+
+date = " %d "
+date-alt = " %Y-%m-%d "
+time =  %H:%M
+time-alt =  %H:%M:%S
+format-prefix = 
+format-prefix-foreground = ${colors.foreground-inverse}
+; format-underline = ${colors.base0D}
+
+label = %date%%time%
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume> <label-volume> <bar-volume>
+label-volume = %percentage%%
+label-volume-foreground = ${root.foreground}
+
+label-muted =  muted
+label-muted-foreground = #666
+
+bar-volume-width = 7
+bar-volume-foreground-0 = ${colors.base0B}
+bar-volume-foreground-1 = ${colors.base0B}
+bar-volume-foreground-2 = ${colors.base0B}
+bar-volume-foreground-3 = ${colors.base0B}
+bar-volume-foreground-4 = ${colors.base0A}
+bar-volume-foreground-5 = ${colors.base09}
+bar-volume-foreground-6 = ${colors.base08}
+bar-volume-gradient = false
+bar-volume-indicator = 
+bar-volume-indicator-font = 2
+bar-volume-fill = ─
+bar-volume-fill-font = 2
+bar-volume-empty = ─
+bar-volume-empty-font = 2
+bar-volume-empty-foreground = ${colors.foreground-inverse}
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+click-right = pavucontrol
+
+[module/alsa]
+type = internal/alsa
+
+format-volume = <label-volume> <bar-volume>
+label-volume = VOL
+label-volume-foreground = ${root.foreground}
+
+format-muted-prefix = " "
+format-muted-foreground = ${colors.foreground-inverse}
+label-muted = sound muted
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.base0B}
+bar-volume-foreground-1 = ${colors.base0B}
+bar-volume-foreground-2 = ${colors.base0B}
+bar-volume-foreground-3 = ${colors.base0B}
+bar-volume-foreground-4 = ${colors.base0A}
+bar-volume-foreground-5 = ${colors.base09}
+bar-volume-foreground-6 = ${colors.base08}
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-indicator-font = 2
+bar-volume-fill = ─
+bar-volume-fill-font = 2
+bar-volume-empty = ─
+bar-volume-empty-font = 2
+bar-volume-empty-foreground = ${colors.foreground-inverse}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = AC
+full-at = 98
+
+; Default: %H:%M:%S
+time-format = %H:%M
+
+format-charging = <animation-charging> <label-charging>
+format-charging-underline = ${colors.warning}
+
+format-discharging = <ramp-capacity> <label-discharging>
+format-discharging-underline = ${colors.alert}
+
+format-full-prefix = " "
+format-full-prefix-foreground = ${colors.foreground-prefix}
+;format-full-underline = ${self.format-charging-underline}
+
+label-charging = %percentage%% (%time%)
+label-discharging = %percentage%% (%time%)
+label-full = %percentage%%
+
+; Only applies if <ramp-capacity> is used
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-foreground = ${colors.foreground-prefix}
+
+; Only applies if <bar-capacity> is used
+bar-capacity-width = 10
+
+; Only applies if <animation-charging> is used
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-foreground = ${colors.foreground-prefix}
+animation-charging-framerate = 750
+
+; Only applies if <animation-discharging> is used
+animation-discharging-0 = 
+animation-discharging-1 = 
+animation-discharging-2 = 
+animation-discharging-3 = 
+animation-discharging-4 = 
+animation-discharging-foreground = ${colors.foreground-prefix}
+animation-discharging-framerate = 750
+
+[module/temperature]
+type = internal/temperature
+; $ for i in /sys/class/thermal/thermal_zone*; do echo "$i: $(<$i/type)"; done
+thermal-zone = 0
+; $ for i in /sys/class/hwmon/hwmon*/temp*_input; do echo "$(<$(dirname $i)/name): $(cat ${i%_*}_label 2>/dev/null || echo $(basename ${i%_*})) $(readlink -f $i)"; done
+; Default reverts to thermal zone setting
+;hwmon-path=/sys/devices/platform/coretemp.0/hwmon/hwmon1/temp1_input
+hwmon-path=/sys/devices/platform/coretemp.0/hwmon/hwmon6/temp1_input
+warn-temperature = 60
+
+format = <ramp> <label>
+format-warn = <ramp> <label-warn>
+
+format-prefix = " "
+format-warn-prefix = " "
+format-prefix-foreground = ${colors.foreground-prefix}
+format-warn-prefix-foreground = ${colors.warning}
+
+ramp-0 = ▁
+ramp-0-foreground = ${colors.base0B}
+ramp-1 = ▂
+ramp-1-foreground = ${colors.base0B}
+ramp-2 = ▃
+ramp-2-foreground = ${colors.base0B}
+ramp-3 = ▄
+ramp-3-foreground = ${colors.base0A}
+ramp-4 = ▅
+ramp-4-foreground = ${colors.base0A}
+ramp-5 = ▆
+ramp-5-foreground = ${colors.base09}
+ramp-6 = ▇
+ramp-6-foreground = ${colors.base08}
+ramp-7 = █
+ramp-7-foreground = ${colors.base08}
+
+label = %temperature-c%
+label-warn = %temperature-c%
+label-warn-foreground = ${colors.warning}
+
+[module/powermenu]
+type = custom/menu
+
+expand-right = true
+
+format-spacing = 1
+
+label-open = 
+label-open-foreground = ${colors.secondary}
+label-close =  cancel
+label-close-foreground = ${colors.secondary}
+label-separator = |
+label-separator-foreground = ${colors.foreground-inverse}
+
+menu-0-0 = reboot
+menu-0-0-exec = menu-open-1
+menu-0-1 = power off
+menu-0-1-exec = menu-open-2
+
+menu-1-0 = cancel
+menu-1-0-exec = menu-open-0
+menu-1-1 = reboot
+menu-1-1-exec = sudo reboot
+
+menu-2-0 = power off
+menu-2-0-exec = sudo poweroff
+menu-2-1 = cancel
+menu-2-1-exec = menu-open-0
+
+[module/batinfo]
+type = custom/script
+interval = 60
+exec = ~/programming/battery-combined-tlp.sh
+label = %output:1%%
+format-underline = ${colors.base0A}
+
+[module/mjd]
+type = custom/script
+exec = ~/programming/mjd
+label = %output%
+format-underline = ${colors.base0B}
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+
+[module/taskwarrior]
+interval = 1 
+type = custom/script
+exec = ~/programming/task_polybar.sh
+format = " <label>"
+format-foreground = ${colors.foreground}
+format-prefix =
+click-left = task "$((`cat /tmp/tw_polybar_id`))" done
+
+[module/music]
+type = custom/script
+exec = if [[ "$(playerctl status)" = "Playing" ]]; then playerctl metadata xesam:artist; echo -n " - "; playerctl metadata xesam:title; else echo -n "Music"; fi
+exec-if = [[ "$(playerctl status)" = "Playing" || "$(playerctl status)" = "Paused" ]] && echo "0"
+interval = 1
+format = <label>
+scroll-up = playerctl previous
+scroll-down = playerctl next
+click-left = playerctl play-pause
+click-right = playerctl stop
+
+[global/wm]
+margin-top = 5
+margin-bottom = 5
+
+[module/pomo]
+type = custom/script
+interval = 1
+exec = pomo clock
+click-left = pomo pause
+click-right = pomo stop
+
+[module/pomodoro]
+type = custom/script
+; exec = /usr/bin/pymodoro --break-prefix " " --pomodoro-prefix " " --pomodoro ─ --empty "  " --break  --length 5
+exec = org-pomodoro
+; Use default symbols
+;exec = pymodoro --length 5
+label = %output%
+tail = true
+interval = 0
+format-foreground = ${colors.alert}
+; Start or reset the timer
+click-left = if [ -e ~/.pomodoro_session ]; then rm ~/.pomodoro_session; else echo "25 5" > ~/.pomodoro_session; fi
+; Increase pomodoro time
+click-right = echo "$((`cut .pomodoro_session -d ' ' -f 1`+5)) 5" > .pomodoro_session
+; Reduce pomodoro time
+click-middle = echo "$((`cut .pomodoro_session -d ' ' -f 1`-5)) 5" > .pomodoro_session
+
+[module/lab]
+type = custom/script
+exec = echo lab
+exec-if = pgrep -x autossh
+interval = 5
+format-underline = ${colors.alert}
+format-prefix = " "
+format-prefix-foreground = #5b
+
+[module/weather]
+type = custom/script
+exec = weather-albacete-spain
+tail = false
+interval = 960

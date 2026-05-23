@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+<action>
+	<icon>utilities-terminal</icon>
+	<name>Open Terminal Here</name>
+	<submenu></submenu>
+	<unique-id>1531378946043126-1</unique-id>
+	<command>exo-open --working-directory %f --launch TerminalEmulator</command>
+	<description>Example for a custom action</description>
+	<range></range>
+	<patterns>*</patterns>
+	<startup-notify/>
+	<directories/>
+</action>
+<action>
+	<icon>com.github.junrrein.PDFSlicer</icon>
+	<name>Reduce PDF Size</name>
+	<submenu>PDF</submenu>
+	<unique-id>1721141863888168-1</unique-id>
+	<command>shrinkpdf -o %d/shrink-%n %f</command>
+	<description>Reduce PDF size</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<other-files/>
+</action>
+<action>
+	<icon>ffmpeg</icon>
+	<name>wav2mp3</name>
+	<submenu>convert</submenu>
+	<unique-id>1724003736647743-1</unique-id>
+	<command>/usr/bin/ffmpeg -i %f -vn -ar 44100 -ac 2 -b:a 192k %n.mp3</command>
+	<description>Convert wav to mp3 file</description>
+	<range>*</range>
+	<patterns>*</patterns>
+	<audio-files/>
+</action>
+</actions>

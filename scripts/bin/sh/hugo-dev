@@ -1,0 +1,5 @@
+#!/bin/bash
+
+HUGO_WORK_DIR=~/workspace/documentation/hugo-site
+cd $HUGO_WORK_DIR
+hugo serve -D --navigateToChanged --bind 0.0.0.0

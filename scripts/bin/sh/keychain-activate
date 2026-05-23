@@ -1,0 +1,3 @@
+#!/bin/bash
+export SSH_ASKPASS=ksshaskpass
+keychain --eval --quiet id_rsa 37409E79 --agents gpg,ssh --gpg2 --systemd

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+screenshot_dir="$HOME/pictures/screenshot"
+timestamp=$(date +%Y%m%d-%H%M%S)
+output_file=/tmp/tesseract-output-$timestamp
+tesseract $screenshot_dir/$(ls -rt $screenshot_dir | tail -n 1) $output_file -l eng
+cat $output_file.txt
+cat $output_file.txt | xclip
+xclip -o

@@ -1,0 +1,10 @@
+#!/bin/bash
+set -x
+
+HOSTNAME=$(hostname)
+
+export BORG_PASSCOMMAND="pass borg/$HOSTNAME"
+borg create --exclude '*/.cache' --exclude '*/.pacman' --exclude-caches --progress /media/elements/backup/$HOSTNAME::{user}-{now} ~
+borg create --progress /media/elements/backup/$HOSTNAME::opt-{now} /opt
+
+

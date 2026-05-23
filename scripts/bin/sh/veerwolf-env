@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+cd $HOME/workspace/master-risc-v/VeeRwolf/
+source bin/activate
+export WORKSPACE=$(pwd)
+export VEERWOLF_ROOT=$WORKSPACE/fusesoc_libraries/veerwolf
+export ZEPHYR_SDK_INSTAL_DIR=$HOME/zephyr/zephyr-sdk-0.13.2
+export BUILD_DIR=$WORKSPACE/build

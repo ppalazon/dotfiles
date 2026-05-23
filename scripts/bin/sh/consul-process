@@ -1,0 +1,54 @@
+#!/bin/bash
+
+consul_pid=$(ps axf | grep "consul agent" | grep -v grep | awk '{print $1}')
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        stop)
+            if [ -z $consul_pid ]; then
+                echo "Consul is stopped"
+                exit -1
+            fi 
+            echo "Stop consul with pid $consul_pid"
+            kill -s SIGKILL $consul_pid
+            shift;;
+        start)
+            if [ ! -z $consul_pid ]; then
+                echo "Consul is running"
+                exit -1
+            fi
+            params=${@:2}
+            echo "Start consul with params $params"
+            consul-agent $params
+            shift;;
+        restart)
+            if [ ! -z $consul_pid ]; then
+                echo "Stop consul with pid $consul_pid"
+                kill -s SIGKILL $consul_pid
+                sleep 3
+            fi
+            params=${@:2}
+            echo "Start consul with params $params"
+            consul-agent $params
+            shift;;
+        reload)
+            if [ -z $consul_pid ]; then
+                echo "Consul is stopped"
+                exit -1
+            fi
+            echo "Reload consul with pid $consul_pid"
+            kill -s SIGHUP $consul_pid
+            shift;;
+        status)
+            if [ -z $consul_pid ]; then
+                echo "Consul is stopped"
+            else
+                echo "Consul is running in pid $consul_pid"
+            fi
+            shift;;
+        *)
+            shift;;
+    esac; shift;
+done
+
+exit 0

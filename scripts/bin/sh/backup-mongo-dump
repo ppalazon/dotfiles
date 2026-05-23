@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+########################################
+# Defaults
+########################################
+
+DB_USER="backupuser"
+DB_HOST="localhost"
+DB_PORT="27017"
+DB_NAME="mydatabase"
+COLLECTION=""
+
+WORK_BACKUPS="${WORK_BACKUPS:-$HOME/work/backups}"
+PASS_PREFIX="localhost/mongo"
+
+########################################
+# Help
+########################################
+
+usage() {
+cat <<EOF
+Usage:
+  $0 [options]
+
+Options:
+  -u, --user         Mongo user             (default: $DB_USER)
+  -H, --host         Mongo host             (default: $DB_HOST)
+  -p, --port         Mongo port             (default: $DB_PORT)
+  -d, --db           Database name          (default: $DB_NAME)
+  -c, --collection   Collection             (default: whole DB)
+  -a, --auth-db      Authentication DB      (default: disabled)
+  -b, --backup-dir   Backup directory       (default: $WORK_BACKUPS/mongo-dump/$DB_HOST/$DB_NAME)
+  -P, --pass-prefix  Password-store prefix  (default: $PASS_PREFIX - pass:$PASS_PREFIX/$DB_USER)
+  -h, --help         Show help
+
+Examples:
+
+Whole DB:
+  $0
+
+Collection:
+  $0 -c users
+
+Custom backup location:
+  $0 --backup-dir /srv/backups/mongodb
+
+Everything:
+  $0 -u admin -H mongo.example.com -d inventory -c orders -a admin -b /srv/backups/mongodb
+EOF
+exit 0
+}
+
+########################################
+# Parse options
+########################################
+
+PARSED=$(getopt \
+  -o u:H:p:d:c:a:b:P:h \
+  --long user:,host:,port:,db:,collection:,auth-db:,backup-dir:,pass-prefix:,help \
+  -- "$@"
+)
+
+eval set -- "$PARSED"
+
+while true; do
+  case "$1" in
+    -u|--user)
+      DB_USER="$2"
+      shift 2
+      ;;
+    -H|--host)
+      DB_HOST="$2"
+      shift 2
+      ;;
+    -p|--port)
+      DB_PORT="$2"
+      shift 2
+      ;;
+    -d|--db)
+      DB_NAME="$2"
+      shift 2
+      ;;
+    -c|--collection)
+      COLLECTION="$2"
+      shift 2
+      ;;
+    -a|--auth-db)
+      AUTH_DB="$2"
+      shift 2
+      ;;
+    -b|--backup-dir)
+      BACKUP_ROOT="$2"
+      shift 2
+      ;;
+    -P|--pass-prefix)
+      PASS_PREFIX="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+########################################
+# Checks
+########################################
+
+command -v pass >/dev/null || {
+  echo "pass not installed"
+  exit 1
+}
+
+command -v mongodump >/dev/null || {
+  echo "mongodump not installed"
+  exit 1
+}
+
+########################################
+# Read password
+########################################
+
+PASS_ENTRY="${PASS_PREFIX}/${DB_USER}"
+MONGO_PASS=$(pass show "$PASS_ENTRY" | head -n1)
+
+########################################
+# Backup path
+########################################
+
+
+STAMP=$(date +%F_%H-%M-%S)
+
+BACKUP_ROOT="${BACKUP_ROOT:-$WORK_BACKUPS/mongo-dump}"
+BACKUP_DIR="$BACKUP_ROOT/$DB_HOST/$DB_NAME"
+mkdir -p "$BACKUP_DIR"
+
+if [[ -n "$COLLECTION" ]]; then
+  ARCHIVE="$BACKUP_DIR/${STAMP}_${DB_NAME}_${COLLECTION}.archive.gz"
+else
+  ARCHIVE="$BACKUP_DIR/${STAMP}_${DB_NAME}.archive.gz"
+fi
+
+########################################
+# Build command
+########################################
+
+CMD=(
+  mongodump
+  --host "$DB_HOST"
+  --port "$DB_PORT"
+  --username "$DB_USER"
+  --password "$MONGO_PASS"
+  --db "$DB_NAME"
+  --archive="$ARCHIVE"
+  --gzip
+)
+
+if [[ -n "$AUTH_DB" ]]; then
+  CMD+=(--authenticationDatabase "$AUTH_DB")
+fi
+
+if [[ -n "$COLLECTION" ]]; then
+  CMD+=(--collection "$COLLECTION")
+fi
+
+########################################
+# Run backup
+########################################
+
+echo "Running backup..."
+"${CMD[@]}"
+
+echo "Backup created:"
+echo "$ARCHIVE"

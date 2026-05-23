@@ -1,0 +1,78 @@
+---
+# clock_color sets the color of the clock digits. Can be RGB values or 256
+# terminal colors. e.g., "#d3ff88", "#abe", 123, 12...
+# clock_color: "#e7c547"
+
+# work_duration is the number of minutes for the work period.
+# work_duration: 25
+
+# short_break_duration is the number of minutes for the short break.
+# short_break_duration: 5
+
+# long_break_duration is the number of minutes for the long break.
+# Long breaks happen every 4 'tomato' cycles.
+# long_break_duration: 15
+
+# no_notification disables desktop notifications when true.
+# no_notification: false
+
+# no_sound_alert disables sound alert when true.
+# no_sound_alert: false
+
+# no_shortcuts_notification disables startup keyboard shortcuts
+# notification. Other notifications still work. Useful after you've
+# learned the shortcuts.
+# no_shortcuts_notification: false
+
+# work_sound_alert_path is the path to a sound file to use as a worktime.
+# work_sound_alert_path: /full/path/to/file.wav
+
+# break_sound_alert_path is the path to a sound file to use for breaks
+# break_sound_alert_path:  /full/path/to/file.wav
+
+
+############################################################
+# Examples for tags (they are not default values)          #
+############################################################
+
+# tags categorize tomatoes (e.g., work, home).
+# Tags are toggled with Ctrl + tag letter (e.g., Ctrl+w, Ctrl+h).
+# tags:
+#   w:
+#     desc: "work"
+#     emoji: "💼"
+#   h:
+#     desc: "home"
+#     emoji: "🏠"
+
+# default_tag is used when no tag is active (optional).
+# default_tag: w
+
+# Triggers enable automatic tag selection based on environment.
+# Triggers can be toggled with 't' shortcut.
+#
+# Trigger priority: triggers > previous tag > default_tag > no tag
+# Manual Ctrl+letter selection always overrides triggers.
+#
+# All trigger arrays use OR logic (any match activates the tag).
+# Conflicts (same IP/host/overlapping times) are detected at startup.
+#
+# Example with triggers:
+# tags:
+#   w:
+#     desc: "work"
+#     emoji: "💼"
+#     triggers:
+#       ips: ["192.168.1.50", "10.0.0.5"]      # office network IPs
+#       times: ["09:00-17:00"]                 # work hours
+#       hosts: ["work-laptop", "office-pc"]    # work machines
+#   h:
+#     desc: "home"
+#     emoji: "🏠"
+#     triggers:
+#       ips: ["192.168.0.100"]                 # home network IP
+#       times: ["17:00-09:00"]                 # evening hours
+#       hosts: ["home-desktop"]                # home machine
+#
+# Time format: HH:MM-HH:MM (24-hour)
+# Overnight spans supported: "22:00-06:00" (10pm to 6am)

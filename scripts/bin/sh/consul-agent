@@ -1,0 +1,38 @@
+#!/bin/bash
+
+uuid=$(uuidgen)
+
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -b|--bind-interface)
+            inet=$2
+            bind="-bind=$(ip -4 addr show $inet | grep inet | tr -s " " | cut -d" " -f3 | head -n 1 | sed 's/\/[0-9]*//g')"
+            shift;;
+        -c|--client-interface)
+            inet=$2
+            client="-client $2"
+            shift;;
+        -n|--node-id)
+            node_id="-node-id=$uuid"
+            shift;;
+        -j|--retry-join)
+            join="-retry-join=$2"
+            shift;;
+        -h|--hostname-node)
+            hostname="-node=$(hostname)"
+            ;;
+        -u|--uglify)
+            uglify=1;;
+        *)
+            echo "Unknown parameter passed: $1"; exit 1;;
+    esac; shift;
+done
+
+if [ -z $bind ]; then
+    bind="-bind=0.0.0.0"
+fi
+
+consul_params="-config-dir=/etc/consul.d $bind $hostname $client $node_id $join"
+echo "Executing consul-agent: $consul_params"
+
+exec consul agent $consul_params

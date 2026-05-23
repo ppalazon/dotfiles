@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+# Highlight geometry selection with a semi-transparent rectangle needs of picom execution
+# GEOMETRY=$(slop -l -c 0.3,0.4,0.6,0.4 --nodecorations)
+GEOMETRY=$(slop -c 0.3,0.4,0.6,0.4 --nodecorations)
+if [[ -z "$GEOMETRY" ]]; then
+  notify-send "No area selected" "Please select an area to capture with slop."
+  exit 1
+fi
+
+exec screenshot-select-cli "$GEOMETRY"

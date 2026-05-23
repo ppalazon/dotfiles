@@ -1,0 +1,3 @@
+#!/bin/bash
+
+visualvm --cp:a /opt/javatools/wildfly/wildfly-18.0.1.Final/bin/client/jboss-client.jar

@@ -1,0 +1,2 @@
+#!/bin/bash
+pyclip2org -o ~/org/kindle -l es -c /media/Kindle/documents/My\ Clippings.txt

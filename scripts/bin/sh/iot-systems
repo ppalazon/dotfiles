@@ -1,0 +1,6 @@
+#!/bin/bash
+# [[file:../org/zk/20210605-iot_management_with_vert_x.org::*Environment][Environment:1]]
+set -e
+sudo systemctl $1 snapd
+sudo systemctl $1 snap.multipass.multipassd.service
+# Environment:1 ends here

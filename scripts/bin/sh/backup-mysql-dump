@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+########################################
+# Defaults
+########################################
+
+DB_USER="backupuser"
+DB_HOST="localhost"
+DB_PORT="3306"
+DB_NAME="mydatabase"
+TABLE=""
+PASS_PREFIX="localhost/mysql"
+
+WORK_BACKUPS="${WORK_BACKUPS:-$HOME/work/backups}"
+
+########################################
+# Help
+########################################
+
+usage() {
+cat <<EOF
+Usage:
+  $0 [options]
+
+Options:
+  -u, --user         MySQL user
+  -H, --host         MySQL host
+  -p, --port         MySQL port
+  -d, --db           Database name
+  -t, --table        Table (optional)
+  -b, --backup-dir   Backup directory
+  -P, --pass-prefix  Password-store prefix
+  -h, --help         Show help
+EOF
+exit 0
+}
+
+########################################
+# Parse options
+########################################
+
+PARSED=$(getopt \
+  -o u:H:p:d:t:b:P:h \
+  --long user:,host:,port:,db:,table:,backup-dir:,pass-prefix:,help \
+  -- "$@"
+)
+
+eval set -- "$PARSED"
+
+while true; do
+  case "$1" in
+    -u|--user) DB_USER="$2"; shift 2 ;;
+    -H|--host) DB_HOST="$2"; shift 2 ;;
+    -p|--port) DB_PORT="$2"; shift 2 ;;
+    -d|--db) DB_NAME="$2"; shift 2 ;;
+    -t|--table) TABLE="$2"; shift 2 ;;
+    -b|--backup-dir) BACKUP_ROOT="$2"; shift 2 ;;
+    -P|--pass-prefix) PASS_PREFIX="$2"; shift 2 ;;
+    -h|--help) usage ;;
+    --) shift; break ;;
+    *) usage ;;
+  esac
+done
+
+########################################
+# Checks
+########################################
+
+command -v pass >/dev/null || { echo "pass not installed"; exit 1; }
+
+# Detect client
+if command -v mariadb-dump >/dev/null; then
+  DUMP_BIN="mariadb-dump"
+elif command -v mysqldump >/dev/null; then
+  DUMP_BIN="mysqldump"
+else
+  echo "mysqldump/mariadb-dump not installed"
+  exit 1
+fi
+
+########################################
+# Read password
+########################################
+
+PASS_ENTRY="${PASS_PREFIX}/${DB_USER}"
+MYSQL_PASS=$(pass show "$PASS_ENTRY" | head -n1)
+
+########################################
+# SSL compatibility
+########################################
+
+if "$DUMP_BIN" --help 2>/dev/null | grep -q ssl-mode; then
+  SSL_OPTS=(--ssl-mode=DISABLED)
+else
+  SSL_OPTS=(--ssl=0)
+fi
+
+########################################
+# Backup path
+########################################
+
+DATE=$(date +%Y%m%d)
+STAMP=$(date +%F_%H-%M-%S)
+
+BACKUP_ROOT="${BACKUP_ROOT:-$WORK_BACKUPS/mysql-dump}"
+BACKUP_DIR="$BACKUP_ROOT/$DB_HOST/$DB_NAME"
+mkdir -p "$BACKUP_DIR"
+
+if [[ -n "$TABLE" ]]; then
+  ARCHIVE="$BACKUP_DIR/${STAMP}_${DB_NAME}_${TABLE}.sql.gz"
+else
+  ARCHIVE="$BACKUP_DIR/${STAMP}_${DB_NAME}.sql.gz"
+fi
+
+########################################
+# Build command (portable dump!)
+########################################
+
+CMD=(
+  "$DUMP_BIN"
+  --host="$DB_HOST"
+  --port="$DB_PORT"
+  --user="$DB_USER"
+  --password="$MYSQL_PASS"
+  "${SSL_OPTS[@]}"
+  --no-create-db
+  --single-transaction
+  --quick
+  --routines
+  --events
+)
+
+if [[ -n "$TABLE" ]]; then
+  CMD+=("$DB_NAME" "$TABLE")
+else
+  CMD+=("$DB_NAME")
+fi
+
+########################################
+# Run backup
+########################################
+
+echo "Running backup..."
+echo "Using: $DUMP_BIN"
+
+"${CMD[@]}" | gzip > "$ARCHIVE"
+
+echo "Backup created:"
+echo "$ARCHIVE"

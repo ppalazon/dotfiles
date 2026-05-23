@@ -1,0 +1,16 @@
+#!/bin/bash
+
+COUNTY="es-ES"
+REGION="CM" 
+DEST_DIR="$HOME/dotfiles/tui/.config/task/"
+OUTPUT_FILE="$DEST_DIR/holidays.rc"
+UPDATE_HOLIDAY_SCRIPT="/usr/share/doc/task/scripts/add-ons/update-holidays.pl"
+
+if [ -f $UPDATE_HOLIDAY_SCRIPT ]; then
+  mkdir -p $DEST_DIR
+  perl $UPDATE_HOLIDAY_SCRIPT --locale $COUNTY \
+    --region $REGION \
+    --file $OUTPUT_FILE
+else
+  echo "Error: update-holidays.pl not found. Please install the 'task' package." >&2
+fi

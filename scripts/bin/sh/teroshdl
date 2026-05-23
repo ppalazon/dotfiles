@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source teroshdl-env
+
+# Activate visual code environment
+USER_DATA_DIR="$HOME/.config/code-teroshdl"
+EXTENSION_DIR="$HOME/.local/share/code-teroshdl/extensions"
+
+mkdir -p "$USER_DATA_DIR" "$EXTENSION_DIR"
+
+exec code \
+  --user-data-dir="$USER_DATA_DIR" \
+  --extensions-dir="$EXTENSION_DIR" \
+  --class=code-terashdl \
+  "$@"

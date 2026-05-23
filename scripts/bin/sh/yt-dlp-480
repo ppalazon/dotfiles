@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+URL="${1:-}"
+
+if [[ -z "$URL" ]]; then
+  echo "Usage: $0 <url>"
+  exit 1
+fi
+
+if ! command -v yt-dlp &> /dev/null; then
+  echo "yt-dlp is not installed. Please install it first."
+  exit 1
+fi
+
+yt-dlp -S vcodec:h264,res:480,acodec:m4a -o "%(title)s.%(ext)s" \
+  --replace-in-metadata title "[^a-zA-Z0-9]+" "-" \
+  --restrict-filenames \
+  $URL

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec mpg123 -o pulse "$1"

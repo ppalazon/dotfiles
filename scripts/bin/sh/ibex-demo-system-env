@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# [[file:../org/zk/20241204-203456-ibex_demo_system.org::*Create a dev environment][Create a dev environment:1]]
+cd ~/workspace/master-risc-v/ibex-demo-system/
+source .venv/bin/activate
+
+# export RISCV=~/tools/lowrisc/lowrisc-toolchain-rv32imcb-20220524-1
+export RISCV=~/tools/riscv-embecosm/riscv-embecosm-embedded-ubuntu2204-20240407
+export PATH=$RISCV/bin:$PATH
+# Create a dev environment:1 ends here

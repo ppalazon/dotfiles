@@ -1,0 +1,176 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+########################################
+# Defaults
+########################################
+
+DB_USER="backupuser"
+DB_HOST="localhost"
+DB_PORT="27017"
+DB_NAME="mydatabase"
+COLLECTION=""
+AUTH_DB=""
+
+PASS_PREFIX="localhost/mongo"
+
+########################################
+# Help
+########################################
+
+usage() {
+cat <<EOF
+Usage:
+  $0 [options] <archive-file>
+
+Options:
+  -u, --user         Mongo user             (default: $DB_USER)
+  -H, --host         Mongo host             (default: $DB_HOST)
+  -p, --port         Mongo port             (default: $DB_PORT)
+  -d, --db           Database name          (default: $DB_NAME)
+  -c, --collection   Collection             (default: restore archive contents)
+  -a, --auth-db      Authentication DB      (default: disabled)
+  -P, --pass-prefix  Password-store prefix  (default: $PASS_PREFIX - pass:$PASS_PREFIX/$DB_USER)
+  -h, --help         Show help
+
+Arguments:
+  archive-file       Required .archive.gz file to restore
+
+Examples:
+
+Restore whole DB:
+  $0 mydatabase_2026-04-23_12-00-00.archive.gz
+
+Restore collection:
+  $0 -c users mydatabase_users_2026-04-23_12-00-00.archive.gz
+
+Restore remote DB:
+  $0 -u admin -H mongo.example.com -d inventory -a admin backup.archive.gz
+EOF
+exit 0
+}
+
+########################################
+# Parse options
+########################################
+
+PARSED=$(getopt \
+  -o u:H:p:d:c:a:P:h \
+  --long user:,host:,port:,db:,collection:,auth-db:,pass-prefix:,help \
+  -- "$@"
+)
+
+eval set -- "$PARSED"
+
+while true; do
+  case "$1" in
+    -u|--user)
+      DB_USER="$2"
+      shift 2
+      ;;
+    -H|--host)
+      DB_HOST="$2"
+      shift 2
+      ;;
+    -p|--port)
+      DB_PORT="$2"
+      shift 2
+      ;;
+    -d|--db)
+      DB_NAME="$2"
+      shift 2
+      ;;
+    -c|--collection)
+      COLLECTION="$2"
+      shift 2
+      ;;
+    -a|--auth-db)
+      AUTH_DB="$2"
+      shift 2
+      ;;
+    -P|--pass-prefix)
+      PASS_PREFIX="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    --)
+      shift
+      break
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+########################################
+# Mandatory archive argument
+########################################
+
+if [[ $# -ne 1 ]]; then
+  usage
+fi
+
+ARCHIVE="$1"
+
+if [[ ! -f "$ARCHIVE" ]]; then
+  echo "Archive not found: $ARCHIVE" >&2
+  exit 1
+fi
+
+########################################
+# Checks
+########################################
+
+command -v pass >/dev/null || {
+  echo "pass not installed"
+  exit 1
+}
+
+command -v mongorestore >/dev/null || {
+  echo "mongorestore not installed"
+  exit 1
+}
+
+########################################
+# Read password
+########################################
+
+PASS_ENTRY="${PASS_PREFIX}/${DB_USER}"
+MONGO_PASS=$(pass show "$PASS_ENTRY" | head -n1)
+
+########################################
+# Build command
+########################################
+
+CMD=(
+  mongorestore
+  --host "$DB_HOST"
+  --port "$DB_PORT"
+  --username "$DB_USER"
+  --password "$MONGO_PASS"
+  --db "$DB_NAME"
+  --archive="$ARCHIVE"
+  --gzip
+)
+
+if [[ -n "$AUTH_DB" ]]; then
+  CMD+=(--authenticationDatabase "$AUTH_DB")
+fi
+
+if [[ -n "$COLLECTION" ]]; then
+  CMD+=(--collection "$COLLECTION")
+fi
+
+########################################
+# Run restore
+########################################
+
+echo "Running restore..."
+echo "Archive: $ARCHIVE"
+
+"${CMD[@]}"
+
+echo "Restore completed."

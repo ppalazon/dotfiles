@@ -1,0 +1,59 @@
+\documentclass[
+$if(fontsize)$
+  $fontsize$,
+$endif$
+$if(papersize)$
+  $papersize$paper,
+$endif$
+$for(classoption)$
+  $classoption$$sep$,
+$endfor$
+]{moderncv}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+
+\usepackage[unicode]{hyperref}
+\usepackage{lmodern}
+\usepackage[perpage, para, bottom]{footmisc}
+$if(geometry)$
+\usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+$endif$
+
+% \moderncvtheme[$theme-color$]{$theme-type$}
+\moderncvcolor{$theme-color$}
+\moderncvstyle{$theme-type$}
+\name{$firstname$}{$lastname$}
+\title{$meta_title$}
+\address{$address$}
+\phone[mobile]{$tel$}
+\email{$email$}
+\author{$for(author)$$author$$sep$ \and $endfor$}
+\date{$date$}
+
+\hypersetup{
+$if(title-meta)$
+  pdftitle={$title-meta$},
+$endif$
+$if(author-meta)$
+  pdfauthor={$author-meta$},
+$endif$
+$if(lang)$
+  pdflang={$lang$},
+$endif$
+$if(subject)$
+  pdfsubject={$subject$},
+$endif$
+$if(keywords)$
+  pdfkeywords={$for(keywords)$$keywords$$sep$, $endfor$},
+$endif$
+  pdfcreator={XeLaTeX via Pandoc with the ModernCV package}}
+  
+\begin{document}
+
+\makecvtitle
+
+$body$
+
+\end{document}

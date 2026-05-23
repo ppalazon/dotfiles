@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+echo 'Empty trash...'
+trash-empty
+
+echo 'Remove old sdk archive...'
+rm -rf ~/.sdkman/archives
+mkdir ~/.sdkman/archives
+
+echo 'Remove old pacman cache...'
+sudo paccache -k 2 -rv
+
+echo 'Clean up docker...'
+docker system prune --volumes
+
+echo 'Remove spotify cache...'
+rm -rf ~/.cache/spotify/Storage
+
+echo 'Remove tracker 3 cache...'
+rm -rf ~/.cache/tracker3
+
+echo 'Clean up temporal logs'
+sudo journalctl --vacuum-time=2d
+
+echo 'Delete pacman aur package'
+rm -rf ~/.pacman/packages/
+rm -rf ~/.pacman/sources/
+mkdir -p ~/.pacman/{packages,sources}
+
+echo 'Delete yay cache'
+rm -rf ~/.cache/yay

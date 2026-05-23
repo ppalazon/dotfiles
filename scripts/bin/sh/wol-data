@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "Wake on Lan - Data..."
+wol 00:22:19:07:5d:13

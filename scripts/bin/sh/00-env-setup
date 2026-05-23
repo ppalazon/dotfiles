@@ -1,0 +1,55 @@
+#!/bin/bash
+
+set -e
+
+LOGFILE="/tmp/installer.log"
+
+# ---------- helpers ----------
+
+log() {
+  echo "[INFO] $1"
+  echo "[INFO] $1" >> "$LOGFILE"
+}
+
+ask_yes_no() {
+  local prompt="$1"
+  while true; do
+    read -rp "$prompt [y/n]: " ans
+    case "$ans" in
+      y|Y) return 0 ;;
+      n|N) return 1 ;;
+      *) echo "Please answer y or n" ;;
+    esac
+  done
+}
+
+install_packages() {
+  sudo pacman -S --needed "$@"
+}
+
+# ---------- install groups ----------
+
+install_starship() {
+  log "Installing starship prompt (https://starship.rs/)"
+  curl -sS https://starship.rs/install.sh | sh
+}
+
+
+# ---------- main ----------
+
+clear
+echo "================================="
+echo "   My Computer Setup Installer"
+echo "================================="
+
+if ask_yes_no "Update pacman packages?"; then
+  sudo pacman -Syyuu
+fi
+
+if ask_yes_no "Install starship prompt (https://starship.rs/)?"; then
+  install_starship
+fi
+
+echo
+echo "Installation finished!"
+echo "Log saved to $LOGFILE"

@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+USER_NAME=$(id -un)
+DOCKER_IMAGE_PREFIX="${DOCKER_IMAGE_PREFIX:-$USER_NAME}"
+DOCKER_WORK_DIR="${DOCKER_WORK_DIR:-$HOME/work/docker/images}"
+
+usage() {
+cat <<EOF
+Usage:
+  $(basename "$0") [OPTIONS] IMAGE [ACTION]
+
+Manage Docker images from IMAGE subdirectory.
+
+Arguments:
+  IMAGE                 Subdirectory containing Dockerfile
+
+Actions:
+  build                 Build image only (default)
+  run                   Build and run container for testing
+  push                  Push image to registry
+  pull                  Pull image from registry
+
+Options:
+  -t, --tag TAG         Docker tag (default: latest)
+  -l, --list            List available images
+  -h, --help            Show this help
+
+Examples:
+  $(basename "$0") kafka
+  $(basename "$0") kafka build
+  $(basename "$0") kafka run
+  $(basename "$0") kafka push --tag dev
+  $(basename "$0") kafka pull
+
+Image name:
+  ${DOCKER_IMAGE_PREFIX}/IMAGE:TAG
+
+EOF
+}
+
+list_images() {
+  echo "Available images:"
+  find "$DOCKER_WORK_DIR" \
+      -mindepth 1 -maxdepth 1 \
+      -type d \
+      -exec test -f "{}/Dockerfile" \; \
+      -print | xargs -n1 basename | sort
+}
+
+TAG="latest"
+IMAGE=""
+ACTION="build"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -t|--tag)
+      TAG="$2"
+      shift 2
+      ;;
+    -l|--list)
+      list_images
+      exit 0
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    build|run|push|pull)
+      ACTION="$1"
+      shift
+      ;;
+    -*)
+      echo "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+    *)
+      if [[ -z "$IMAGE" ]]; then
+        IMAGE="$1"
+      else
+        echo "Unexpected argument: $1"
+        usage
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$IMAGE" ]]; then
+  echo "Error: IMAGE required."
+  usage
+  exit 1
+fi
+
+BUILD_DIR="$DOCKER_WORK_DIR/$IMAGE"
+FULL_IMAGE="${DOCKER_IMAGE_PREFIX}/${IMAGE}:${TAG}"
+
+case "$ACTION" in
+
+  build)
+    echo "Building $FULL_IMAGE"
+    docker build -t "$FULL_IMAGE" "$BUILD_DIR"
+    ;;
+
+  run)
+    echo "Running test container..."
+    docker run --rm -it --name "${IMAGE}-test" "$FULL_IMAGE"
+    ;;
+
+  push)
+    echo "Pushing $FULL_IMAGE"
+    docker push "$FULL_IMAGE"
+    ;;
+
+  pull)
+    echo "Pulling $FULL_IMAGE"
+    docker pull "$FULL_IMAGE"
+    ;;
+
+esac
+
+echo
+echo "Done."

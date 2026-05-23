@@ -1,0 +1,54 @@
+! ScrollBar
+URxvt.scrollBar: false
+URxvt*scrollTtyOutput: false
+URxvt*scrollWithBuffer: true
+URxvt*scrollTtyKeypress: true
+URxvt.secondaryScreen: 1
+URxvt.secondaryScroll: 0
+
+URxvt.cursorBlink: 1
+URxvt.cursorUnderline:1
+
+URxvt*visualBell: True
+
+!! Common Keybinds for Navigations
+!! https://addy-dclxvi.github.io/post/configuring-urxvt/
+URxvt.keysym.Shift-Up: command:\033]720;1\007
+URxvt.keysym.Shift-Down: command:\033]721;1\007
+URxvt.keysym.Control-Up: \033[1;5A
+URxvt.keysym.Control-Down: \033[1;5B
+URxvt.keysym.Control-Right: \033[1;5C
+URxvt.keysym.Control-Left: \033[1;5D
+
+URxvt.perl-ext-common: default,clipboard,url-select,fullscreen,resize-font,keyboard-select
+URxvt.copyCommand: xclip -i -selection clipboard
+URxvt.pasteCommand: xclip -o -selection clipboard
+URxvt.keysym.M-c: perl:clipboard:copy
+URxvt.keysym.M-v: perl:clipboard:paste
+URxvt.keysym.M-C-v: perl:clipboard:paste_escaped
+URxvt.keysym.M-Escape: perl:keyboard-select:activate
+URxvt.keysym.M-s: perl:keyboard-select:search
+URxvt.keysym.M-u: perl:url-select:select_next
+URxvt.url-select.launcher: /usr/bin/xdg-open
+URxvt.url-select.underline: true
+URxvt.keysym.F11: perl:fullscreen:switch
+
+URxvt.font: xft:monospace:style=Regular:size=12
+URxvt.letterSpace: -1
+
+!HiDPI
+!Xft.dpi: 96
+Xft.dpi: 144
+!Xft.autohint: 0
+Xft.lcdfilter:  lcddefault
+Xft.hintstyle:  hintslight
+Xft.hinting: 1
+Xft.antialias: 1
+Xft.rgba: rgb
+
+! #include ".cache/wal/colors.Xresources"
+
+Vsim*background: #ffffff
+Vsim*foreground: #000000
+
+#include ".Xresources-colors-tinted"

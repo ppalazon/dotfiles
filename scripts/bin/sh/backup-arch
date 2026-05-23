@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo -n "Borg repository password: "
+read -s password
+
+echo ""
+echo -n "Starting borg process..."
+
+repository=/media/Elements/xps13-arch
+
+sudo BORG_PASSPHRASE=$password borg create --progress --stats --compression lz4 $repository::xps13-arch-{now:%Y-%m-%d} / \
+--exclude "/proc" --exclude "/tmp" --exclude "/mnt" --exclude "/dev" --exclude "/sys" --exclude "/run" --exclude "/media"  \
+--exclude "/var/log" --exclude "/var/cache/apt/archives" --exclude "/usr/src/linux-headers*" --exclude "/home/*/.gvfs"  \
+--exclude "/home/*/.cache" --exclude "/home/*/.local/share/Trash" --exclude "/var/lib/data"
+
+sudo BORG_PASSPHRASE=$password borg prune --verbose --list --keep-daily=4 --keep-weekly=2 $repository

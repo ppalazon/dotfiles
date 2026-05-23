@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eou pipefail
+
+if [[ -f /tmp/screenshot-geometry ]]; then
+  GEOMETRY=$(cat /tmp/screenshot-geometry)
+else
+  notify-send "No geometry provided" "Please select an area to capture with slop first."
+  exit 1
+fi
+
+exec screenshot-select-cli "$GEOMETRY"

@@ -1,0 +1,9 @@
+start_directory: ~/workspace/documentation/hugo-site
+session_name: hugo
+windows:
+- window_name: hugo-edition
+  layout: even-horizontal
+  panes:
+  - 
+  - shell_command:
+      - hugo server

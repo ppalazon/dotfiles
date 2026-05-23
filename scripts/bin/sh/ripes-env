@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# [[file:../org/zk/20241009-165749-ripes_risc_v_simulator_and_assembly_code_editor.org::*Installation][Installation:1]]
+export LD_LIBRARY_PATH=""
+export QT_PLUGIN_PATH=""
+export QML_IMPORT_PATH=""
+export QML2_IMPORT_PATH=""
+exec /usr/bin/ripes
+# Installation:1 ends here

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -o pipefail
+
+# Use provided commit or default to HEAD
+commit="${1:-HEAD}"
+
+# Default prefix removal: v, V, or anything ending with "-"
+prefix_re='^(v|V|.*-)'
+
+clean() {
+  sed -E "
+    s/${prefix_re}//;
+    s/-([0-9]+)-g/.r\1./;
+    s/-/./g
+  "
+}
+
+# Ensure we're inside a git repo
+git rev-parse --is-inside-work-tree >/dev/null 2>&1 || exit 1
+
+{
+  git describe --long "$commit" 2>/dev/null | clean ||
+  git describe --long --tags "$commit" 2>/dev/null | clean ||
+  printf 'r%s.%s\n' \
+    "$(git rev-list --count "$commit" 2>/dev/null)" \
+    "$(git rev-parse --short "$commit" 2>/dev/null)"
+} 2>/dev/null
+

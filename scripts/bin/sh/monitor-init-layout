@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+LAYOUT_DIR="$HOME/.screenlayout"
+mkdir -p "$LAYOUT_DIR"
+
+LAYOUT=${1:-$LAYOUT_DIR/default.sh}
+
+if [[ ! -f "$LAYOUT" ]]; then
+  echo "Layout file not found: $LAYOUT"
+  exit 1
+fi
+
+bash "$LAYOUT"
+hud-scratchpad -r
+polybar-launcher 2>/dev/null &
+
