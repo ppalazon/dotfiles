@@ -16,6 +16,17 @@ mkdir -p "$SCREENSHOT_DIR"
 FILENAME="$SCREENSHOT_DIR/screenshot-$(date +%Y%m%d-%H%M%S).png"
 maim -g "$GEOMETRY" -u "$FILENAME"
 
+# Reduce the image to get max quality for printing on a A4 paper, but keeping original ratio
+# A4 paper has 8.27x11.69 inches, using margin of 1 inch, we get 6.27x9.69 inches, at 300 DPI, we get 1881x2907 pixels, but we want to limit the width to 2181 pixels to get better quality for printing
+MAX_WIDTH=1881
+MAX_HEIGHT=2907
+convert "$FILENAME" \
+  -strip \
+  -units PixelsPerInch \
+  -density 300 \
+  -resize "${MAX_WIDTH}x${MAX_HEIGHT}>" \
+  "$FILENAME"
+
 # Save latest geometry for repeat captures
 echo "$GEOMETRY" > /tmp/screenshot-geometry
 
