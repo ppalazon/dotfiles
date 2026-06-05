@@ -11,6 +11,7 @@ if [[ ! -f "$LAYOUT" ]]; then
 fi
 
 bash "$LAYOUT"
+$HOME/.fehbg
 hud-scratchpad -r
 polybar-launcher 2>/dev/null &
 
