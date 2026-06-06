@@ -278,6 +278,7 @@ bindsym XF86AudioPrev exec playerctl previous
 
 # HUD terminal and taskwarrior
 for_window [class="kitty-task"] floating enable
+for_window [class="kitty-btm"] floating enable
 for_window [class="kitty-quake-terminal"] floating enable, sticky enable
 for_window [class="qalculate-qt"] floating enable
 for_window [class="kitty-pomati"] floating enable, sticky enable
@@ -287,6 +288,7 @@ bindsym $mod+asciitilde exec hud-quake-terminal
 bindsym $mod+c exec hud-calculator
 bindsym $mod+p exec hud-pomati
 bindsym $mod+a exec hud-audio-control
+bindsym $mod+o exec hud-btm
 
 # Window params, use xprop
 for_window [window_role="About"] floating enable
