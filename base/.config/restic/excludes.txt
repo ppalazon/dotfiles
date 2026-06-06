@@ -1,0 +1,45 @@
+# Caches
+.cache/
+**/.cache/
+**/.pytest_cache/
+**/__pycache__/
+
+# Python
+**/*.pyc
+**/*.pyo
+
+# Node.js
+**/node_modules/
+
+# Java / Kotlin
+**/.gradle/
+
+# Rust
+**/target/
+
+# Vivado / FPGA generated files
+**/.Xil/
+**/*.jou
+**/*.str
+**/*.wdb
+**/*.xsim.dir/
+
+# Editor swap files
+*.swp
+*.swo
+*~
+
+# Operating system junk
+.DS_Store
+
+# Podman
+.local/share/containers/
+
+# Docker rootless
+.local/share/docker/
+
+# Flatpak runtimes
+.local/share/flatpak/
+
+# Steam
+.local/share/Steam

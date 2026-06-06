@@ -3,23 +3,34 @@
 set -euo pipefail
 
 HOST=$(hostname)
+REMOTE_HOST="data"
+DIR_DEST="/data/backup/rsync/$HOST"
+REPOSITORY_DEST="$REMOTE_HOST:$DIR_DEST"
+INCLUDE_PATH_FILE="$HOME/.config/rsync/backup-paths.txt"
 
-ssh data "mkdir -p /data/backup/$HOST"
+if [[ ! -f "$INCLUDE_PATH_FILE" ]]; then
+  echo "Include path file not found: $INCLUDE_PATH_FILE"
+  exit 1
+fi
 
-echo "Syncing data to backup server for host $HOST..."
+echo "Creating backup directory on remote server: $REPOSITORY_DEST"
+ssh data "mkdir -p $DIR_DEST"
 
-echo "Syncing m2 repository..."
-rsync -avzP --delete ~/.m2/ data:/data/backup/$HOST/m2/
+while IFS= read -r path; do
+  [[ -z "$path" || "$path" =~ ^[[:space:]]*# ]] && continue    
+  
+  name=$(basename "$path")
+  name="${name/#./dot-}"
 
-echo "Syncing org directory..."
-rsync -avzP --delete ~/org/ data:/data/backup/$HOST/org/
+  echo "Syncing $path to $REPOSITORY_DEST/$name"
 
-echo "Syncing obsidian directory..."
-rsync -avzP --delete ~/obsidian/ data:/data/backup/$HOST/obsidian/
-
-echo "Syncing work directory..."
-rsync -avzP --delete ~/work/ data:/data/backup/$HOST/work/
-
-echo "Syncing secrets backup..."
-rsync -azvP ~/.secrets-backup/ data:/data/backup/$HOST/secrets/
-rsync -avzP ~/.gnupg/backups/ data:/data/backup/$HOST/secrets/gnupg/
+  if [[ -d "$path" ]]; then
+    echo "Syncing directory: $path"
+    rsync -avzP --delete "$path/" "$REPOSITORY_DEST/$(basename "$path")/"
+  elif [[ -f "$path" ]]; then
+    echo "Syncing file: $path"
+    rsync -avzP "$path" "$REPOSITORY_DEST/$(basename "$path")"
+  else
+    echo "Path not found: $path"
+  fi
+done < "$INCLUDE_PATH_FILE"

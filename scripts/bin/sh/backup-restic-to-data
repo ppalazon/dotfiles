@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HOST=$(hostname)
+
+export RESTIC_REPOSITORY="sftp:data:/data/backup/restic/$HOST"
+export RESTIC_PASSWORD_COMMAND="pass show restic/backup"
+export RESTIC_PATHS_FILE="$HOME/.config/restic/includes.txt"
+export RESTIC_EXCLUDES_FILE="$HOME/.config/restic/excludes.txt"
+
+if [[ ! -f "$RESTIC_PATHS_FILE" ]]; then
+  echo "Paths file not found: $RESTIC_PATHS_FILE"
+  exit 1
+fi
+
+if ! restic snapshots >/dev/null 2>&1; then
+  echo "Initializing restic repository at $RESTIC_REPOSITORY"
+  restic init
+fi
+
+notify-send "Restic Backup" "Starting backup for $HOST to data"
+
+restic backup \
+  --files-from "$RESTIC_PATHS_FILE" \
+  --exclude-file "$RESTIC_EXCLUDES_FILE" \
+  --exclude-if-present .nobackup \
+  --tag $HOST
+
+restic forget \
+  --keep-daily 7 \
+  --keep-weekly 4 \
+  --keep-monthly 12 \
+  --prune
+
+restic check
+
+notify-send "Restic Backup" "Backup completed for $HOST to data"

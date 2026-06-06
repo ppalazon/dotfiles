@@ -1,0 +1,6 @@
+[Unit]
+Description=Daily Restic Backup
+
+[Service]
+Type=oneshot
+ExecStart=%h/bin/sh/backup-restic-to-data
