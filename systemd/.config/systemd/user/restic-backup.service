@@ -3,4 +3,5 @@ Description=Daily Restic Backup
 
 [Service]
 Type=oneshot
+Environment=SSH_AUTH_SOCK=%t/gnupg/S.gpg-agent.ssh
 ExecStart=%h/bin/sh/backup-restic-to-data
