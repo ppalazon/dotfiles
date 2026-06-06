@@ -1,3 +1,9 @@
 .stignore
 .stfolder/*
 _private/*
+
+# direnv
+.direnv/
+
+# mkdocs
+site/

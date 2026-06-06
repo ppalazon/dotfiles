@@ -1,0 +1,8 @@
+site_name: dotfiles
+
+nav:
+  - Home: index.md
+  - Monitor: monitor.md
+
+theme:
+  name: material
