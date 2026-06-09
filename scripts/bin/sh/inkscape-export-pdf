@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+AREA="page-drawing"
+MARGIN=""
+PAGE="all"
+SUFFIX=""
+SCRIPT_NAME="$(basename "$0")"
+
+usage() {
+  cat <<EOF
+Usage:
+  $SCRIPT_NAME [options] <input_file> <output_dir>
+
+Options:
+  --page N|all
+  --area page|drawing|page-drawing
+  --suffix NAME
+  -h, --help
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --page)
+      PAGE="$2"
+      shift 2
+      ;;
+    --area)
+      AREA="$2"
+      shift 2
+      ;;
+    --suffix)
+      SUFFIX="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+[[ $# -eq 2 ]] || { usage; exit 1; }
+
+INPUT_FILE="$1"
+OUTPUT_DIR="$2"
+
+command -v inkscape >/dev/null || {
+  echo "Inkscape is not installed"
+  exit 1
+}
+
+command -v xmlstarlet >/dev/null || {
+  echo "xmlstarlet is not installed"
+  exit 1
+}
+
+mkdir -p "$OUTPUT_DIR"
+
+INPUT_STEM=$(basename "$INPUT_FILE" .svg)
+OUTPUT_SUFFIX="${SUFFIX:+-$SUFFIX}"
+
+build_export_args() {
+  case "$AREA" in
+    page)
+      echo --export-area-page
+      ;;
+    drawing)
+      echo --export-area-drawing
+      ;;
+    page-drawing)
+      ;;
+    *)
+      echo "Invalid area: $AREA" >&2
+      exit 1
+      ;;
+  esac
+}
+
+mapfile -t COMMON_EXPORT_ARGS < <(build_export_args)
+
+export_page() {
+  local page_number="$1"
+  local page_label="$2"
+
+  local output_file="${OUTPUT_DIR}/${INPUT_STEM}-${page_label}${OUTPUT_SUFFIX}.pdf"
+
+  if [[ "$AREA" == "page-drawing" ]]; then
+    local tmp_svg
+    tmp_svg="$(mktemp --suffix=.svg)"
+
+    inkscape "$INPUT_FILE" \
+      --export-type=svg \
+      --export-filename="$tmp_svg" \
+      --export-page="$page_number"
+
+    inkscape "$tmp_svg" \
+      --export-type=pdf \
+      --export-filename="$output_file" \
+      --export-area-drawing
+
+    rm -f "$tmp_svg"
+  else
+    inkscape "$INPUT_FILE" \
+      --export-type=pdf \
+      --export-filename="$output_file" \
+      --export-page="$page_number" \
+
+      "${COMMON_EXPORT_ARGS[@]}"
+  fi
+
+}
+
+if [[ "$PAGE" != "all" ]]; then
+  export_page "$PAGE" "page${PAGE}"
+  exit 0
+fi
+
+mapfile -t pages < <(
+  xmlstarlet sel \
+    -N inkscape="http://www.inkscape.org/namespaces/inkscape" \
+    -t \
+    -m "//inkscape:page" \
+    -v "@id" -o "|" -v "@inkscape:label" -n \
+    "$INPUT_FILE"
+)
+
+for i in "${!pages[@]}"; do
+  page="${pages[$i]}"
+  export_page "$((i + 1))" "${page#*|}"
+done

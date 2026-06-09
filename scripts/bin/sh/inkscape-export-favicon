@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_NAME="$(basename "$0")"
+
+usage() {
+  cat <<EOF
+Usage:
+  $SCRIPT_NAME <source.svg> <output_dir>
+
+Example:
+  $SCRIPT_NAME input.svg export/favicon
+EOF
+}
+
+if [[ $# -ne 2 ]]; then
+  usage
+  exit 1
+fi
+
+SOURCE_SVG="$1"
+EXPORT_DIR="$2"
+FAVICON_DIR="${EXPORT_DIR}/img/favicon"
+
+mkdir -p "${FAVICON_DIR}"
+
+echo "Generating favicon assets from ${SOURCE_SVG}..."
+
+# Standard favicons
+magick "${SOURCE_SVG}" -background none -resize 16x16 \
+  "${FAVICON_DIR}/favicon-16x16.png"
+
+magick "${SOURCE_SVG}" -background none -resize 32x32 \
+  "${FAVICON_DIR}/favicon-32x32.png"
+
+magick "${SOURCE_SVG}" -background none -resize 48x48 \
+  "${FAVICON_DIR}/favicon-48x48.png"
+
+# Apple touch icon
+magick "${SOURCE_SVG}" -background none -resize 180x180 \
+  "${FAVICON_DIR}/apple-touch-icon.png"
+
+# Android / PWA icons
+magick "${SOURCE_SVG}" -background none -resize 192x192 \
+  "${FAVICON_DIR}/android-chrome-192x192.png"
+
+magick "${SOURCE_SVG}" -background none -resize 512x512 \
+  "${FAVICON_DIR}/android-chrome-512x512.png"
+
+# Multi-resolution ICO
+magick "${SOURCE_SVG}" \
+  -define icon:auto-resize=16,32,48 \
+  "${EXPORT_DIR}/favicon.ico"
+
+# Optimized SVG favicon
+svgo \
+  -i "${SOURCE_SVG}" \
+  -o "${EXPORT_DIR}/favicon.svg" \
+  --multipass
+
+echo "Done."
