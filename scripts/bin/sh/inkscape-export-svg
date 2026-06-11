@@ -122,7 +122,8 @@ export_page() {
       "${COMMON_EXPORT_ARGS[@]}"
   fi
 
-  svgo "$output_file"
+  # Avoid output to stdout from svgo
+  svgo "$output_file" > /dev/null 2>&1
 }
 
 if [[ "$PAGE" != "all" ]]; then
@@ -141,5 +142,6 @@ mapfile -t pages < <(
 
 for i in "${!pages[@]}"; do
   page="${pages[$i]}"
+  echo "Exporting page $((i + 1)): ${page#*|}..."
   export_page "$((i + 1))" "${page#*|}"
 done

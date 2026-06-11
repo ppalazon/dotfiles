@@ -114,7 +114,6 @@ export_page() {
       --export-type=pdf \
       --export-filename="$output_file" \
       --export-page="$page_number" \
-
       "${COMMON_EXPORT_ARGS[@]}"
   fi
 
@@ -136,5 +135,6 @@ mapfile -t pages < <(
 
 for i in "${!pages[@]}"; do
   page="${pages[$i]}"
+  echo "Exporting page $((i + 1)): ${page#*|}..."
   export_page "$((i + 1))" "${page#*|}"
 done

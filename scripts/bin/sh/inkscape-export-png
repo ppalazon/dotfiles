@@ -168,5 +168,6 @@ mapfile -t pages < <(
 
 for i in "${!pages[@]}"; do
   page="${pages[$i]}"
+  echo "Exporting page $((i + 1)): ${page#*|}..."
   export_page "$((i + 1))" "${page#*|}"
 done
