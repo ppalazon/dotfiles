@@ -1,0 +1,190 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+CACHE_DIR="$HOME/.cache/gitignore"
+REPO_DIR="$CACHE_DIR/gitignore"
+
+CUSTOM_DIR="$HOME/.config/gitignore"
+
+require() {
+  command -v "$1" >/dev/null 2>&1 || {
+    echo "Missing dependency: $1" >&2
+    exit 1
+  }
+}
+
+check_dependencies() {
+  require git
+  require fzf
+  require xclip
+  require bat
+}
+
+update_repo() {
+  mkdir -p "$CACHE_DIR"
+
+  if [[ ! -d "$REPO_DIR/.git" ]]; then
+    git clone https://github.com/github/gitignore.git "$REPO_DIR"
+  else
+    git -C "$REPO_DIR" pull --ff-only
+  fi
+}
+
+ensure_repo() {
+  [[ -d "$REPO_DIR/.git" ]] || update_repo
+}
+
+list_templates() {
+
+  # Custom
+  find "$CUSTOM_DIR" \
+    \( -type f -o -type l \) \
+    -name '*.gitignore' 2>/dev/null |
+  while read -r file; do
+    printf "Custom\t%s\t%s\n" \
+      "$(basename "$file" .gitignore)" \
+      "$file"
+  done
+
+  # Official
+  find "$REPO_DIR" \
+    -maxdepth 1 \
+    -type f \
+    -name '*.gitignore' |
+  while read -r file; do
+    printf "Official\t%s\t%s\n" \
+      "$(basename "$file" .gitignore)" \
+      "$file"
+  done
+
+  # Global
+  if [[ -d "$REPO_DIR/Global" ]]; then
+    find "$REPO_DIR/Global" \
+      -type f \
+      -name '*.gitignore' |
+    while read -r file; do
+      printf "Global\t%s\t%s\n" \
+        "$(basename "$file" .gitignore)" \
+        "$file"
+    done
+  fi
+
+  # Community
+  if [[ -d "$REPO_DIR/community" ]]; then
+    find "$REPO_DIR/community" \
+      -type f \
+      -name '*.gitignore' |
+    while read -r file; do
+      printf "Community\t%s\t%s\n" \
+        "$(basename "$file" .gitignore)" \
+        "$file"
+    done
+  fi
+}
+
+copy_file() {
+  xclip -selection clipboard < "$1"
+}
+
+copy_merged() {
+  awk '!seen[$0]++'
+}
+
+show_help() {
+  cat <<EOF
+
+TAB       Mark template
+SHIFT-TAB Unmark template
+
+ENTER     Open selected template
+CTRL-Y    Copy current template
+CTRL-G    Copy all selected templates
+CTRL-U    Update github cache
+
+EOF
+}
+
+main() {
+
+  check_dependencies
+  ensure_repo
+
+  while true; do
+
+    result="$(
+      list_templates |
+      sort -t$'\t' -k1,1 -k2,2 |
+      fzf \
+        --ansi \
+        --multi \
+        --delimiter=$'\t' \
+        --with-nth=1,2 \
+        --preview 'bat --style=plain --color=always {3}' \
+        --preview-window=right:70% \
+        --header "$(show_help)" \
+        --expect=enter,ctrl-y,ctrl-g,ctrl-u
+    )"
+
+    [[ -z "$result" ]] && exit 0
+
+    key="$(head -n1 <<< "$result")"
+
+    selection="$(
+      tail -n +2 <<< "$result"
+    )"
+
+    case "$key" in
+
+      enter)
+        file="$(head -n1 <<< "$selection" | cut -f3)"
+        bat --paging=always "$file"
+        ;;
+
+      ctrl-y)
+        file="$(head -n1 <<< "$selection" | cut -f3)"
+
+        copy_file "$file"
+
+        notify-send \
+          "gitignore" \
+          "Copied $(basename "$file")"
+        ;;
+
+      ctrl-g)
+
+        files="$(
+          cut -f3 <<< "$selection"
+        )"
+
+        [[ -z "$files" ]] && continue
+
+        while read -r file; do
+          echo "# ===== $(basename "$file") ====="
+          cat "$file"
+          echo
+        done <<< "$files" |
+        copy_merged |
+        xclip -selection clipboard
+
+        notify-send \
+          "gitignore" \
+          "Merged templates copied to clipboard"
+        ;;
+
+      ctrl-u)
+
+        update_repo
+
+        notify-send \
+          "gitignore" \
+          "Templates updated"
+        ;;
+
+    esac
+
+  done
+}
+
+main "$@"
+
