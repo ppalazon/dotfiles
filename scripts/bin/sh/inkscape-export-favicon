@@ -56,6 +56,6 @@ magick "${SOURCE_SVG}" \
 svgo \
   -i "${SOURCE_SVG}" \
   -o "${EXPORT_DIR}/favicon.svg" \
-  --multipass
+  --multipass > /dev/null 2>&1
 
 echo "Done."
