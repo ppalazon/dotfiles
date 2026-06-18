@@ -292,6 +292,7 @@ bindsym $mod+o exec hud-btm
 
 # Window params, use xprop
 for_window [window_role="About"] floating enable
+for_window [window_role="about"] floating enable
 for_window [window_role="Organizer"] floating enable
 for_window [window_role="Preferences"] floating enable
 for_window [window_role="bubble"] floating enable
