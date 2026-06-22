@@ -8,7 +8,8 @@ On startup -> execute default.sh
 
 ## Select monitor
 
-Execute script `monitor-selection` or `Win+x` to open rofi selection. It would get the screenlayout on `~/.screenlayout`
+Execute script `monitor-selection` or `Win+x` to open rofi selection. It would
+get the screenlayout on `~/.screenlayout`
 
 ## Avoid sharing
 

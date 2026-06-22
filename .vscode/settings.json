@@ -1,1 +1,10 @@
-{}
+{
+  "editor.wordWrap": "off",
+  "[markdown]": {
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 110
+  },
+  "pasteImage.path": "${currentFileDir}/assets/images",
+  "pasteImage.namePrefix": "",
+  "pasteImage.insertPattern": "![](${imageFilePath})"
+}

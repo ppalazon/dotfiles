@@ -63,3 +63,6 @@
 
 [core]
 	autocrlf = input
+
+# [commit]
+#   gpgSign = true

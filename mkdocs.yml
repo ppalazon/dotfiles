@@ -1,8 +1,48 @@
 site_name: dotfiles
+repo_url: https://github.com/ppalazon/dotfiles
+copyright: Copyright &copy; 2026 Pablo Palazón
+site_url: https://ppalazon.github.io/dotfiles/
+
+extra:
+  homepage: https://ppalazon.github.io/dotfiles/
+  generator: true
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ppalazon/dotfiles
 
 nav:
   - Home: index.md
   - Monitor: monitor.md
+  - Workflow:
+      - Obsidian-PDF: obsidian-pdf.md
 
 theme:
   name: material
+  palette:
+    primary: blue grey
+    accent: orange
+  font:
+    text: Noto Sans
+    code: Noto Sans Mono
+  features:
+    - content.code.copy
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid_custom
+
+plugins:
+  - search
+  - mermaid2
+  - social
