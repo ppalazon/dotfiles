@@ -1,0 +1,139 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import re
+import sys
+from pathlib import Path
+
+
+IMAGE_EXTENSIONS = {
+    ".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".bmp", ".tiff", ".tif"
+}
+
+
+EMBEDDED_WIKILINK_RE = re.compile(r"!\[\[([^\]]+)\]\]")
+
+
+def parse_wikilink_target(raw: str) -> str:
+    """
+    Handles:
+      ![[image.png]]
+      ![[image.png|300]]
+      ![[folder/image.png]]
+    """
+    target = raw.split("|", 1)[0].strip()
+    target = target.split("#", 1)[0].strip()
+    return target
+
+
+def is_image_name(name: str) -> bool:
+    return Path(name).suffix.lower() in IMAGE_EXTENSIONS
+
+
+def resolve_image(target: str, resource_paths: list[Path]) -> Path | None:
+    target_path = Path(target)
+
+    candidates = []
+
+    for base in resource_paths:
+        if target_path.is_absolute():
+            candidates.append(target_path)
+        else:
+            candidates.append(base / target_path)
+
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate.resolve()
+
+    # If Obsidian link omits folder, search by basename in resource paths.
+    basename = target_path.name
+
+    for base in resource_paths:
+        if not base.is_dir():
+            continue
+
+        for found in base.rglob(basename):
+            if found.is_file():
+                return found.resolve()
+
+    # If extension was omitted, try all known image extensions.
+    if target_path.suffix == "":
+        for base in resource_paths:
+            if not base.is_dir():
+                continue
+
+            for ext in IMAGE_EXTENSIONS:
+                for found in base.rglob(basename + ext):
+                    if found.is_file():
+                        return found.resolve()
+
+    return None
+
+
+def markdown_image(
+    resolved: Path,
+    original: str,
+    relative_to: Path | None = None
+) -> str:
+
+    if relative_to is not None:
+        try:
+            path = resolved.relative_to(relative_to)
+        except ValueError:
+            path = os.path.relpath(resolved, relative_to)
+            path = Path(path)
+    else:
+        path = resolved
+
+    alt = Path(original).stem
+
+    return f"![{alt}]({path.as_posix()})"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", required=True)
+    parser.add_argument("--output", required=True)
+    parser.add_argument("--relative-to", help="Emit paths relative to this directory")
+    parser.add_argument("--resource-path", nargs="+", required=True)
+
+    args = parser.parse_args()
+
+    input_path = Path(args.input)
+    output_path = Path(args.output)
+    relative_to = (
+        Path(args.relative_to).expanduser().resolve()
+        if args.relative_to
+        else None
+    )
+    resource_paths = [Path(p).expanduser().resolve() for p in args.resource_path]
+
+    text = input_path.read_text(encoding="utf-8")
+
+    def replace(match: re.Match) -> str:
+        raw = match.group(1)
+        target = parse_wikilink_target(raw)
+
+        if not is_image_name(target) and Path(target).suffix != "":
+            return match.group(0)
+
+        resolved = resolve_image(target, resource_paths)
+
+        if resolved is None:
+            print(
+                f"Warning: could not resolve embedded image: {target}",
+                file=sys.stderr,
+            )
+            return match.group(0)
+
+        return markdown_image(resolved, target, relative_to)
+
+    rewritten = EMBEDDED_WIKILINK_RE.sub(replace, text)
+    output_path.write_text(rewritten, encoding="utf-8")
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,29 @@
+#!/bin/bash
+set -eou pipefail
+
+MD_FILE=${1:-}
+
+if [ -z "$MD_FILE" ]; then
+  echo "Usage: $(basename $0) <markdown-file>"
+  exit 1
+fi
+
+if [ ! -f "$MD_FILE" ]; then
+  echo "Error: File '$MD_FILE' does not exist."
+  exit 1
+fi
+
+MD_DIR=$(dirname "$MD_FILE")
+OUTPUT_FILE="${MD_FILE%.md}.pdf"
+
+pandoc "$MD_FILE" \
+  -f markdown+wikilinks_title_after_pipe \
+  --resource-path="${MD_DIR}" \
+  --resource-path="${MD_DIR}/attachments" \
+  --resource-path="$HOME/.pandoc/resources" \
+  --lua-filter="/home/ppalazon/obsidian/brain/.obsidian/plugins/obsidian-enhancing-export/lua/pdf.lua" \
+  -o "${OUTPUT_FILE}" \
+  -t pdf \
+  --pdf-engine=pdflatex
+
+xdg-open "${OUTPUT_FILE}" &
