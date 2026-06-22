@@ -83,6 +83,7 @@ export EDITOR="nvim"
 [[ -d "$HOME/.local/bin" ]] && path_append "$HOME/.local/bin"
 [[ -d "$HOME/bin" ]] && path_append "$HOME/bin"
 [[ -d "$HOME/bin/sh" ]] && path_append "$HOME/bin/sh"
+[[ -d "$HOME/bin/py" ]] && path_append "$HOME/bin/py"
 [[ -d "$HOME/.cargo/bin" ]] && path_append "$HOME/.cargo/bin"
 
 # Go configuration

@@ -16,7 +16,7 @@ unset SSH_AGENT_PID
 export SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh
 
 export PATH="/usr/local/texlive/2026/bin/x86_64-linux:$PATH"
-export PATH="$PATH:$HOME/.local/bin:$HOME/bin:$HOME/bin/sh"
+export PATH="$PATH:$HOME/.local/bin:$HOME/bin:$HOME/bin/sh:$HOME/bin/py"
 export GOPATH=$HOME/go
 
 [ -n "$DISPLAY" ] && export BROWSER=firefox || export BROWSER=links
