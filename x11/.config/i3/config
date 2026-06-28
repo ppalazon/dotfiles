@@ -276,6 +276,9 @@ bindsym XF86AudioPause exec playerctl pause
 bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
+# Emoji selector
+bindsym $mod+shift+u exec rofimoji
+
 # HUD terminal and taskwarrior
 for_window [class="kitty-task"] floating enable
 for_window [class="kitty-btm"] floating enable
