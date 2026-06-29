@@ -40,7 +40,7 @@ fi
 
 MD_FILE=$(realpath "$MD_FILE")
 MD_DIR=$(dirname "$MD_FILE")
-OUTPUT_FILE_TYP="${MD_FILE%.md}.typ"
+OUTPUT_FILE_PDF="${MD_FILE%.md}.pdf"
 
 # Move to the directory of the markdown file to ensure relative paths work correctly
 cd "$MD_DIR"
@@ -52,7 +52,13 @@ RESOURCE_PATHS=(
 )
 
 # Extract style metadata from the markdown file (Using template directly, doesn't work because of citeproc)
-STYLE_NAME=$(sed -n '/^---$/,/^---$/p' "$MD_FILE" | sed '1d;$d' | yq -r '.style // empty')
+STYLE_NAME=$(
+  awk '
+    NR == 1 && $0 == "---" { in_yaml = 1; next }
+    in_yaml && $0 == "---" { exit }
+    in_yaml { print }
+  ' "$MD_FILE" | yq -r '.style // empty'
+)
 if [ -z "$STYLE_NAME" ]; then
   STYLE_NAME="@local/pandoc-article:0.1.0"
 fi
