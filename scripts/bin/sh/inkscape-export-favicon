@@ -6,56 +6,71 @@ SCRIPT_NAME="$(basename "$0")"
 usage() {
   cat <<EOF
 Usage:
-  $SCRIPT_NAME <source.svg> <output_dir>
+  $SCRIPT_NAME <source.svg> <output_dir> [suffix]
 
-Example:
-  $SCRIPT_NAME input.svg export/favicon
+Arguments:
+  source.svg   Source SVG file.
+  output_dir   Output directory.
+  suffix       Optional suffix (e.g. light, dark).
+
+Examples:
+  $SCRIPT_NAME logo.svg export
+  $SCRIPT_NAME logo-light.svg export light
+  $SCRIPT_NAME logo-dark.svg export dark
 EOF
 }
 
-if [[ $# -ne 2 ]]; then
+if [[ $# -lt 2 || $# -gt 3 ]]; then
   usage
   exit 1
 fi
 
 SOURCE_SVG="$1"
 EXPORT_DIR="$2"
+SUFFIX="${3:-}"
+
 FAVICON_DIR="${EXPORT_DIR}/img/favicon"
 
 mkdir -p "${FAVICON_DIR}"
 
+# Optional filename suffix
+if [[ -n "$SUFFIX" ]]; then
+  SUFFIX="-$SUFFIX"
+fi
+
 echo "Generating favicon assets from ${SOURCE_SVG}..."
 
+generate_png() {
+  local size="$1"
+  local name="$2"
+
+  magick "${SOURCE_SVG}" \
+    -background none \
+    -resize "${size}x${size}" \
+    "${FAVICON_DIR}/${name}${SUFFIX}.png"
+}
+
 # Standard favicons
-magick "${SOURCE_SVG}" -background none -resize 16x16 \
-  "${FAVICON_DIR}/favicon-16x16.png"
-
-magick "${SOURCE_SVG}" -background none -resize 32x32 \
-  "${FAVICON_DIR}/favicon-32x32.png"
-
-magick "${SOURCE_SVG}" -background none -resize 48x48 \
-  "${FAVICON_DIR}/favicon-48x48.png"
+generate_png 16  "favicon-16x16"
+generate_png 32  "favicon-32x32"
+generate_png 48  "favicon-48x48"
 
 # Apple touch icon
-magick "${SOURCE_SVG}" -background none -resize 180x180 \
-  "${FAVICON_DIR}/apple-touch-icon.png"
+generate_png 180 "apple-touch-icon"
 
-# Android / PWA icons
-magick "${SOURCE_SVG}" -background none -resize 192x192 \
-  "${FAVICON_DIR}/android-chrome-192x192.png"
-
-magick "${SOURCE_SVG}" -background none -resize 512x512 \
-  "${FAVICON_DIR}/android-chrome-512x512.png"
+# Android / PWA
+generate_png 192 "android-chrome-192x192"
+generate_png 512 "android-chrome-512x512"
 
 # Multi-resolution ICO
 magick "${SOURCE_SVG}" \
   -define icon:auto-resize=16,32,48 \
-  "${EXPORT_DIR}/favicon.ico"
+  "${EXPORT_DIR}/favicon${SUFFIX}.ico"
 
 # Optimized SVG favicon
 svgo \
   -i "${SOURCE_SVG}" \
-  -o "${EXPORT_DIR}/favicon.svg" \
-  --multipass > /dev/null 2>&1
+  -o "${EXPORT_DIR}/favicon${SUFFIX}.svg" \
+  --multipass >/dev/null 2>&1
 
 echo "Done."
