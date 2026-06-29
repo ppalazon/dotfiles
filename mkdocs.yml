@@ -22,8 +22,8 @@ theme:
     primary: blue grey
     accent: orange
   font:
-    text: Noto Sans
-    code: Noto Sans Mono
+    text: Saira
+    code: JetBrains Mono
   features:
     - content.code.copy
   icon:
