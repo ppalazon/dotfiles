@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+UUID="$1"
+
+URL=$(task _get "$UUID".url)
+
+if [ -z "$URL" ]; then
+  echo "Error: No URL found for task $UUID"
+  exit 1
+fi
+
+firefox --new-tab "$URL" >/dev/null 2>&1 &

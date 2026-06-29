@@ -19,3 +19,6 @@ uda.taskwarrior-tui.selection.reverse=yes
 
 uda.url.type=string
 uda.url.label=URL
+
+uda.taskwarrior-tui.shortcuts.1=task-open-url
+uda.taskwarrior-tui.keyconfig.shortcut1=o
