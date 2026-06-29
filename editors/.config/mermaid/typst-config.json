@@ -1,0 +1,11 @@
+{
+  "layout": "elk",
+  "elk": {
+    "mergeEdges": false,
+    "nodePlacementStrategy": "BRANDES_KOEPF",
+    "considerModelOrder": "NODES_AND_EDGES",
+    "forceNodeModelOrder": false,
+    "cycleBreakingStrategy": "GREEDY_MODEL_ORDER",
+    "keepEntryNodeOnTop": true
+  }
+}
