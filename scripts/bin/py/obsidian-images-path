@@ -15,16 +15,19 @@ IMAGE_EXTENSIONS = {
 EMBEDDED_WIKILINK_RE = re.compile(r"!\[\[([^\]]+)\]\]")
 
 
-def parse_wikilink_target(raw: str) -> str:
+def parse_wikilink(raw: str) -> tuple[str, str | None]:
     """
     Handles:
       ![[image.png]]
-      ![[image.png|300]]
-      ![[folder/image.png]]
+      ![[image.png|Caption]]
+      ![[folder/image.png|Caption]]
     """
-    target = raw.split("|", 1)[0].strip()
-    target = target.split("#", 1)[0].strip()
-    return target
+    parts = [p.strip() for p in raw.split("|")]
+
+    target = parts[0].split("#", 1)[0].strip()
+    caption = parts[1] if len(parts) > 1 else None
+
+    return target, caption
 
 
 def is_image_name(name: str) -> bool:
@@ -74,6 +77,7 @@ def resolve_image(target: str, resource_paths: list[Path]) -> Path | None:
 def markdown_image(
     resolved: Path,
     original: str,
+    caption: str | None = None,
     relative_to: Path | None = None
 ) -> str:
 
@@ -86,7 +90,7 @@ def markdown_image(
     else:
         path = resolved
 
-    alt = Path(original).stem
+    alt = caption or Path(original).stem
 
     return f"![{alt}]({path.as_posix()})"
 
@@ -113,7 +117,7 @@ def main() -> int:
 
     def replace(match: re.Match) -> str:
         raw = match.group(1)
-        target = parse_wikilink_target(raw)
+        target, caption = parse_wikilink(raw)
 
         if not is_image_name(target) and Path(target).suffix != "":
             return match.group(0)
@@ -127,7 +131,7 @@ def main() -> int:
             )
             return match.group(0)
 
-        return markdown_image(resolved, target, relative_to)
+        return markdown_image(resolved, target, caption, relative_to)
 
     rewritten = EMBEDDED_WIKILINK_RE.sub(replace, text)
     output_path.write_text(rewritten, encoding="utf-8")
