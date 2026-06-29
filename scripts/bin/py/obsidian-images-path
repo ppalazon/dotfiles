@@ -90,9 +90,12 @@ def markdown_image(
     else:
         path = resolved
 
-    alt = caption or Path(original).stem
+    alt = caption or None
 
-    return f"![{alt}]({path.as_posix()})"
+    if alt:
+        return f"![{alt}]({path.as_posix()})"
+    else:
+        return f"![]({path.as_posix()})"
 
 
 def main() -> int:
