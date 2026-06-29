@@ -24,6 +24,7 @@ alias emacs='emacs-launcher'
 
 # Use pnpm with security by default
 alias npm='pnpm'
+alias npx='pnpx'
 alias yarn='pnpm'
 
 # Hub alias
