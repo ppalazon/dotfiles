@@ -41,6 +41,7 @@ fi
 MD_FILE=$(realpath "$MD_FILE")
 MD_DIR=$(dirname "$MD_FILE")
 OUTPUT_FILE_PDF="${MD_FILE%.md}.pdf"
+OUTPUT_FILE_TYP="${MD_FILE%.md}.typ"
 
 # Move to the directory of the markdown file to ensure relative paths work correctly
 cd "$MD_DIR"
@@ -72,12 +73,14 @@ obsidian-images-path \
   --relative-to "$MD_DIR" \
   --resource-path "${RESOURCE_PATHS[@]}"
 
+# cat "$TMP_MD" | tail -n 20
 
 pandoc "$TMP_MD" \
   -f markdown+wikilinks_title_after_pipe \
   --resource-path="${MD_DIR}" \
   --resource-path="${MD_DIR}/attachments" \
   --resource-path="$HOME/.pandoc/resources" \
+  --lua-filter typst-div-layout.lua \
   --lua-filter typst-image-sizing.lua \
   --lua-filter typst-fix-template-citeproc.lua \
   --lua-filter typst-diagram.lua \
@@ -85,8 +88,26 @@ pandoc "$TMP_MD" \
   -t pdf \
   -V template="$STYLE_NAME" \
   --pdf-engine=typst \
+  --template "$HOME/.pandoc/templates/obsidian.typ" \
   --extract-media=.pandoc-media
   # --verbose
+
+# pandoc "$TMP_MD" \
+#   -f markdown+wikilinks_title_after_pipe \
+#   --resource-path="${MD_DIR}" \
+#   --resource-path="${MD_DIR}/attachments" \
+#   --resource-path="$HOME/.pandoc/resources" \
+#   --lua-filter typst-image-sizing.lua \
+#   --lua-filter typst-fix-template-citeproc.lua \
+#   --lua-filter typst-diagram.lua \
+#   -o "${OUTPUT_FILE_TYP}" \
+#   -t typst \
+#   -V template="$STYLE_NAME" \
+#   --template "$HOME/.pandoc/templates/obsidian.typ" \
+#   --extract-media=.pandoc-media
+#   # --verbose
+
+# typst compile "$OUTPUT_FILE_TYP"
   
 if ! pgrep -af zathura | grep -Fq -- "$OUTPUT_FILE_PDF"; then
     zathura "$OUTPUT_FILE_PDF" &

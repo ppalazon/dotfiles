@@ -1,5 +1,34 @@
 #let horizontalrule = line(start: (25%,0%), end: (75%,0%))
 
+#let pagewide(body) = align(center)[
+  #box(width: 125%)[
+    #body
+  ]
+]
+
+#let landscape(body) = [
+  #pagebreak()
+  #set page(flipped: true)  
+  #align(center + horizon)[
+    #block(
+    width: 120%,
+    height: 100%,
+    )[
+      #body
+    ]
+  ]
+  #set page(flipped: false)
+  #pagebreak()
+]
+
+#let fullpage(body) = [
+  #pagebreak()
+  #align(center)[
+    #body
+  ]
+  #pagebreak()
+]
+
 #show terms: it => {
   it.children
     .map(child => [
