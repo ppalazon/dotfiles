@@ -12,7 +12,8 @@ resource-path:
 filters:
   - diagram.lua
 
-slide-level: 2
+# By default, highest heading level in the hierarchy that is followed immediately by content
+# slide-level: 2
 
 variables:
   aspectratio: 169
