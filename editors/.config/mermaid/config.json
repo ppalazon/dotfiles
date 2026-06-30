@@ -1,5 +1,6 @@
 {
   "layout": "elk",
+  "htmlLabels": false,
   "elk": {
     "mergeEdges": false,
     "nodePlacementStrategy": "BRANDES_KOEPF",

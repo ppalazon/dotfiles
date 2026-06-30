@@ -1,0 +1,18 @@
+to: beamer
+pdf-engine: lualatex
+template: beamer.tex
+
+include-in-header:
+  - header-phyxor.tex
+
+resource-path:
+  - .
+  - ${HOME}/.pandoc/resources
+
+filters:
+  - diagram.lua
+
+slide-level: 2
+
+variables:
+  aspectratio: 169

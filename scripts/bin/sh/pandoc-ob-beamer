@@ -1,0 +1,88 @@
+#!/bin/bash
+set -eou pipefail
+
+MD_FILE=${1:-}
+
+if [ -z "$MD_FILE" ]; then
+  echo "Usage: $(basename $0) <markdown-file>"
+  exit 1
+fi
+
+if [ ! -f "$MD_FILE" ]; then
+  echo "Error: File '$MD_FILE' does not exist."
+  exit 1
+fi
+
+if ! command -v pandoc &> /dev/null; then
+    echo "Error: pandoc command not found. Please install it."
+    exit 1
+fi
+
+if ! command -v obsidian-images-path &> /dev/null; then
+    echo "Error: obsidian-images-path command not found. Please check ~/bin/py."
+    exit 1
+fi
+
+if ! command -v typst &> /dev/null; then
+    echo "Error: typst command not found. Please install it."
+    exit 1
+fi
+
+if ! command -v zathura &> /dev/null; then
+    echo "Error: zathura command not found. Please install it."
+    exit 1
+fi
+
+if ! command -v mq &> /dev/null; then
+    echo "Error: mq command not found. Please install it."
+    exit 1
+fi
+
+MD_FILE=$(realpath "$MD_FILE")
+MD_DIR=$(dirname "$MD_FILE")
+OUTPUT_FILE_PDF="${MD_FILE%.md}.pdf"
+OUTPUT_FILE_TEX="${MD_FILE%.md}.tex"
+
+# Move to the directory of the markdown file to ensure relative paths work correctly
+cd "$MD_DIR"
+
+# RESOURCE_PATHS=(
+#   "$MD_DIR"
+#   "$MD_DIR/attachments"
+#   "$HOME/.pandoc/resources"
+# )
+
+# Extract style metadata from the markdown file (Using template directly, doesn't work because of citeproc)
+# STYLE_NAME=$(
+#   awk '
+#     NR == 1 && $0 == "---" { in_yaml = 1; next }
+#     in_yaml && $0 == "---" { exit }
+#     in_yaml { print }
+#   ' "$MD_FILE" | yq -r '.style // empty'
+# )
+# if [ -z "$STYLE_NAME" ]; then
+#   STYLE_NAME="@local/pandoc-article:0.1.0"
+# fi
+
+# TMP_MD=$(mktemp --suffix=.md)
+# trap 'rm -f "$TMP_MD"' EXIT
+
+# obsidian-images-path \
+#   --input "$MD_FILE" \
+#   --output "$TMP_MD" \
+#   --relative-to "$MD_DIR" \
+#   --resource-path "${RESOURCE_PATHS[@]}"
+
+# cat "$TMP_MD" | tail -n 20
+
+pandoc "$MD_FILE" \
+  -f markdown+wikilinks_title_after_pipe \
+  --resource-path="${MD_DIR}" \
+  --resource-path="${MD_DIR}/attachments" \
+  -o "${OUTPUT_FILE_PDF}" \
+  --defaults beamer-phyxor
+  # --verbose
+  
+if ! pgrep -af zathura | grep -Fq -- "$OUTPUT_FILE_PDF"; then
+    zathura "$OUTPUT_FILE_PDF" &
+fi
