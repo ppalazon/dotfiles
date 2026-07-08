@@ -1,21 +1,23 @@
 #!/usr/bin/env bash
 
-set -eou pipefail
+set -e
 
-ORIGNAL_IMAGE="${1:-}"
+ORIGINAL_IMAGE="${1:-}"
 
-if [[ -z "$ORIGNAL_IMAGE" ]]; then
+if [[ -z "$ORIGINAL_IMAGE" ]]; then
   SCREENSHOT_DIR="${SCREENSHOT_DIR:-$HOME/pictures/screen}"
   # Get the most recent screenshot in the screenshot directory
-  ORIGNAL_IMAGE=$(ls -t "$SCREENSHOT_DIR"/screenshot-*.png 2>/dev/null | head -n 1)
-  if [[ -z "$ORIGNAL_IMAGE" ]]; then
+  ORIGINAL_IMAGE=$(ls -t1 $SCREENSHOT_DIR/screenshot-*.png 2>/dev/null | head -n 1)
+  if [[ -z "$ORIGINAL_IMAGE" ]]; then
     notify-send "No screenshots found" "No screenshots found in $SCREENSHOT_DIR. Please take a screenshot first."
     exit 1
   fi
 fi
 
-TRIMMED_FILENAME=$(basename "$ORIGNAL_IMAGE")
-DIRNAME=$(dirname "$ORIGNAL_IMAGE")
+echo "Editing screenshot: $ORIGINAL_IMAGE"
+
+TRIMMED_FILENAME=$(basename "$ORIGINAL_IMAGE")
+DIRNAME=$(dirname "$ORIGINAL_IMAGE")
 notify-send "Editing last screenshot" "$TRIMMED_FILENAME"
 
 STEM="${TRIMMED_FILENAME%.*}"
@@ -32,4 +34,4 @@ else
   NEW_FILENAME="$BASE-e1.$EXT"
 fi
 
-satty -f $ORIGNAL_IMAGE -o "$DIRNAME/$NEW_FILENAME"
+satty -f "$ORIGINAL_IMAGE" -o "$DIRNAME/$NEW_FILENAME"
