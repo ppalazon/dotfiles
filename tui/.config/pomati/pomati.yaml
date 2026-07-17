@@ -25,10 +25,10 @@
 # no_shortcuts_notification: false
 
 # work_sound_alert_path is the path to a sound file to use as a worktime.
-# work_sound_alert_path: /full/path/to/file.wav
+work_sound_alert_path: ~/.config/pomati/work.mp3
 
 # break_sound_alert_path is the path to a sound file to use for breaks
-# break_sound_alert_path:  /full/path/to/file.wav
+break_sound_alert_path: ~/.config/pomati/break.mp3
 
 
 ############################################################
