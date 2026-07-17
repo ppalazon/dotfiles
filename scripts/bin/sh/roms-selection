@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+INPUT_DIR="${1:-.}"
+OUTPUT_DIR="${2:-selected}"
+MODE="${3:-strict}"
+
+mkdir -p "$OUTPUT_DIR"
+
+declare -A best_file
+declare -A best_score
+
+score() {
+  local name="$1"
+
+  # Ignore known unwanted ROMs
+  # Ignore non-retail releases
+  [[ "$name" =~ \(Hack\) ]] && return 1
+  [[ "$name" =~ \(Beta\) ]] && return 1
+  [[ "$name" =~ \(Proto\) ]] && return 1
+  [[ "$name" =~ \(Prototype\) ]] && return 1
+  [[ "$name" =~ \(Demo\) ]] && return 1
+  [[ "$name" =~ \(Sample\) ]] && return 1
+  [[ "$name" =~ \(Pirate\) ]] && return 1
+  [[ "$name" =~ \(Aftermarket\) ]] && return 1
+  [[ "$name" =~ \(PD\) ]] && return 1
+  [[ "$name" =~ \(BS\) ]] && return 1
+
+  # Ignore GoodTools tags
+  [[ "$name" =~ \[a ]] && return 1    # Alternate
+  [[ "$name" =~ \[b ]] && return 1    # Bad dump
+  [[ "$name" =~ \[f ]] && return 1    # Fixed
+  [[ "$name" =~ \[h ]] && return 1    # Hack
+  [[ "$name" =~ \[o ]] && return 1    # Overdump
+  [[ "$name" =~ \[p ]] && return 1    # Pirate
+  [[ "$name" =~ \[t ]] && return 1    # Trainer
+  [[ "$name" =~ \[T ]] && return 1    # Translation
+  [[ "$name" =~ \[u ]] && return 1    # Unknown
+  [[ "$name" =~ \[x ]] && return 1    # Bad checksum
+  [[ "$name" =~ \[m ]] && return 1    # Modified/Multicart
+  [[ "$name" =~ \[c ]] && return 1    # Cracked
+
+  local bonus=0
+
+  case "$MODE" in
+    strict)
+      # Require [!]
+      [[ "$name" =~ \[\!\] ]] || return 1
+      bonus=1000
+      ;;
+    relaxed)
+      # Prefer [!], but accept ROMs without [] tags
+      [[ "$name" =~ \[\!\] ]] && bonus=1000
+      ;;
+    *)
+      echo "Unknown mode '$MODE' (strict|relaxed)" >&2
+      exit 1
+      ;;
+  esac
+
+  if [[ "$name" =~ \(U\) ]]; then
+    echo $((bonus + 100))
+  elif [[ "$name" =~ \(UE\) ]]; then
+    echo $((bonus + 90))
+  elif [[ "$name" =~ \(E\) ]]; then
+    echo $((bonus + 80))
+  elif [[ "$name" =~ \(W\) ]]; then
+    echo $((bonus + 70))
+  elif [[ "$name" =~ \(J\) ]]; then
+    echo $((bonus + 60))
+  else
+    echo $((bonus + 10))
+  fi
+}
+
+while IFS= read -r -d '' file; do
+  name=$(basename "$file")
+
+  if ! s=$(score "$name"); then
+    continue
+  fi
+
+  game="${name%%(*}"
+  game="${game%" "}"
+
+  current=${best_score["$game"]:-0}
+
+  if (( s > current )); then
+    best_score["$game"]=$s
+    best_file["$game"]="$file"
+  fi
+done < <(find "$INPUT_DIR" -maxdepth 1 -type f -print0)
+
+for game in "${!best_file[@]}"; do
+  cp "${best_file[$game]}" "$OUTPUT_DIR/"
+  echo "Selected: $(basename "${best_file[$game]}")"
+done
+
+echo "Copied ${#best_file[@]} ROMs."
