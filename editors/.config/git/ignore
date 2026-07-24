@@ -1,0 +1,83 @@
+# OS / Desktop
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.rej
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+\#*\#
+.\#*
+
+# Nano
+*.save
+
+# Kate
+.kate-swp
+
+# Generic logs
+*.log
+
+# Python
+__pycache__/
+
+# Linux
+.Trash-*
+.directory
+
+# Direnv
+.direnv/
+
+# Personal environment files
+.env.local
+.envrc
+
+# Ctags
+tags
+TAGS
+
+# Patch leftovers
+*.patch~
+
+# Generic build directories
+build/
+Build/
+dist/
+Dist/
+out/
+Out/
+target/
+Target/
+
+# Generic export directories
+export/
+exports/
+Export/
+
+# Temporary build artifacts
+tmp/
+temp/
+
+# Cache directories
+.cache/
+.cache-loader/
+.parcel-cache/
+.eslintcache/
+
+# Miscellaneous
+generated/
+gen/
+artifacts/
