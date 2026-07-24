@@ -1,0 +1,68 @@
+################################################################################
+# QuestaSim / ModelSim
+################################################################################
+
+# Compiled libraries
+work/
+work_lib/
+questa_lib/
+modelsim_lib/
+
+# Transcript and logs
+transcript
+*.log
+*.vstf
+
+# Waveforms
+vsim.wlf
+*.wlf
+
+# Qrun
+qrun.out/
+
+# Visualizer
+design.bin
+qwave.db/
+visualizer/
+*.db
+
+# UCDB coverage
+*.ucdb
+coverage/
+covhtmlreport/
+cov_reports/
+
+# Optimization databases
+*_opt/
+optimized/
+
+# Temporary simulation directories
+simv/
+simulation/
+sim/
+temp/
+tmp/
+
+# Crash dumps
+*.stackdump
+core
+core.*
+
+# DPI compilation
+*.o
+*.obj
+*.so
+*.dll
+*.a
+
+# Generated memory files (optional)
+*.mif~
+*.hex~
+
+# Backup/editor files
+*~
+*.bak
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

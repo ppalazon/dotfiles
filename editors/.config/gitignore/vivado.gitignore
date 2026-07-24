@@ -1,0 +1,21 @@
+## Vivado
+
+.Xil/
+.cache/
+.hw/
+.ip_user_files/
+.runs/
+.sim/
+.gen/
+
+build/
+work/
+transcript
+*.wlf
+*.ucdb
+
+reports/
+
+*.jou
+*.log
+*.str

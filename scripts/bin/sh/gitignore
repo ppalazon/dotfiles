@@ -42,7 +42,7 @@ list_templates() {
     \( -type f -o -type l \) \
     -name '*.gitignore' 2>/dev/null |
   while read -r file; do
-    printf "Custom\t%s\t%s\n" \
+    printf "00-Custom\t%s\t%s\n" \
       "$(basename "$file" .gitignore)" \
       "$file"
   done

@@ -1,0 +1,4 @@
+# DVT IDE
+.dvt/*
+!.dvt/default.build
+!.dvt/default.ls
