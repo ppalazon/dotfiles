@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DOTFILES_DIR=${DOTFILES_DIR:-$HOME/dotfiles}
+
+if [[ ! -d "$DOTFILES_DIR" ]]; then
+  echo "Error: DOTFILES_DIR ($DOTFILES_DIR) does not exist."
+  exit 1
+fi
+
+cd "$DOTFILES_DIR"
+
+[[ -d ~/bin ]] || mkdir ~/bin
+
+echo "Stowing dotfiles..."
+
+stow -Sv --no-folding base
+echo "✅ Base dotfiles stowed."
+stow -Sv --no-folding editors
+echo "✅ Editors dotfiles stowed."
+stow -Sv --no-folding tui
+echo "✅ TUI dotfiles stowed."
+stow -Sv --no-folding x11
+echo "✅ X11 dotfiles stowed."
+stow -Sv --no-folding systemd
+echo "✅ Systemd dotfiles stowed."
+stow -Sv scripts
+echo "✅ Scripts dotfiles stowed (Full directories)"
+stow -Sv autokey
+echo "✅ Autokey dotfiles stowed."
+
+if [[ -d _private ]]; then
+  stow -Sv --no-folding _private
+  echo "🏠 Private dotfiles stowed."
+fi
+
+#mkdir -p ~/.local/share/applications
+#ln -sf ~/.config/mimeapps.list ~/.local/share/applications/mimeapps.list

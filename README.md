@@ -22,7 +22,15 @@ To have access to this repository, you can checkout this repository on `~/dotfil
 ```bash
 git clone http://github.org/ppalazon/dotfiles ~/dotfiles
 cd ~/dotfiles
-./stow-init.sh
+./scripts/bin/sh/dotfiles-stow
+```
+
+## Update stow files
+
+After, you've created new files you can create symbolic links on `$HOME`, you should execute again the `stow` commands with the following script:
+
+```bash
+dotfiles-stow
 ```
 
 ## Structure
