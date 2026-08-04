@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+
 cd $HOME/workspace/master-risc-v/VeeRwolf/
 source bin/activate
 export WORKSPACE=$(pwd)

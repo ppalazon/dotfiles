@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # oss-cad-suite: https://github.com/YosysHQ/oss-cad-suite-build/releases
 
@@ -14,7 +14,7 @@ fi
 # Activate questa sim license
 export SALT_LICENSE_SERVER=~/FlexLM/LR-164616_License.dat
 
-# Activate vivado 
+# Activate vivado
 VIVADO_DIR="$HOME/tools/xilinx/2025.2.1/Vivado"
 [[ -f "$VIVADO_DIR/settings64.sh" ]] && source "$VIVADO_DIR/settings64.sh"
 

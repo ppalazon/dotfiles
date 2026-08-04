@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ENV_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/env-source"
+
+usage() {
+    cat <<EOF
+Usage:
+    env-source [ENV...]
+    env-source --list
+    env-source --init bash
+    env-source --help
+EOF
+}
+
+list_envs() {
+    find "$ENV_DIR" \( -type f -o -type l \) -printf '%P\n' | sort
+}
+
+init_bash() {
+    cat <<'EOF'
+es() {
+    eval "$(env-source "$@")"
+}
+
+_env_source_completion()
+{
+    local cur
+
+    cur="${COMP_WORDS[COMP_CWORD]}"
+
+    COMPREPLY=(
+        $(compgen -W "$(env-source --list)" -- "$cur")
+    )
+}
+
+complete -F _env_source_completion env-source
+complete -F _env_source_completion es
+EOF
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
+    exit 1
+fi
+
+case "$1" in
+    --help|-h)
+        usage
+        exit 0
+        ;;
+
+    --list)
+        list_envs
+        exit 0
+        ;;
+
+    --init)
+        shift
+
+        case "${1:-}" in
+            bash)
+                init_bash
+                ;;
+            *)
+                echo "Unsupported shell: ${1:-}" >&2
+                exit 1
+                ;;
+        esac
+
+        exit 0
+        ;;
+esac
+
+printf 'eval "$(direnv stdlib)"\n'
+
+for env in "$@"; do
+    file="$ENV_DIR/$env"
+
+    if [[ ! -f "$file" && ! -L "$file" ]]; then
+        printf "echo %q >&2\n" "env-source: unknown environment: $env"
+        printf "return 1\n"
+        exit 1
+    fi
+
+    printf 'source %q\n' "$file"
+done

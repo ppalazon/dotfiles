@@ -168,6 +168,11 @@ export ANSIBLE_NOCOWS=1
 # Enable direnv
 [ -x "$(which direnv)" ] && eval "$(direnv hook bash)"
 
+# Enable env-source
+if command -v env-source >/dev/null 2>&1; then
+  eval "$(env-source --init bash)"
+fi
+
 # Enable pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d "$PYENV_ROOT" ]] || mkdir -p "$PYENV_ROOT"

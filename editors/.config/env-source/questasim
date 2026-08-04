@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+# Questa Sim environment
+QUESTA_SIM_DIR="$HOME/tools/questa/altera-25.1std/questa_fse/"
+if [[ -d "$QUESTA_SIM_DIR/bin" ]]; then
+  export PATH="$QUESTA_SIM_DIR/bin:$PATH"
+fi
+# Activate questa sim license
+export SALT_LICENSE_SERVER=~/FlexLM/LR-164616_License.dat

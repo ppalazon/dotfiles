@@ -29,5 +29,6 @@ secure_dir "$HOME/.password-store"
 secure_dir "$HOME/.secrets-backup"
 secure_dir "$HOME/.bash.d"
 secure_dir "$HOME/.bash_completions.d"
+secure_dir "$HOME/.config/env-source"
 
 echo "✅ Done."
