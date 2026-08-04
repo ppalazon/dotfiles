@@ -1,46 +1,45 @@
 # Dotfiles
 
-This project contains my basic dotfiles to configure in an Arch Linux workstation. This project is based on a stow configuration, so the original files are links to the this dotfiles folder. 
-
-By default, I use this repository under `~/dotfiles`, and there are some absolute references in config files and scripts.
+My dotfiles for an Arch Linux workstation, managed as a [GNU stow](https://www.gnu.org/software/stow/) tree. Each top-level folder mirrors `$HOME`; the real files are symlinks into this repo, which I keep at `~/dotfiles`. Some configs and scripts reference `~/dotfiles` absolutely, so that path is expected.
 
 Environment:
 
 - Arch Linux
 - Bash shell
-- X11 / i3 Environment
+- X11 / i3
 - Kitty terminal
-- Based on Tomorrow night colorscheme
-- SystemD
+- Tomorrow Night colorscheme
+- systemd (user services)
 
-## Initialization
+## Initialize
 
-As this repository is based on `stow`, you should make sure that you've installed beforehand. To learn how to do that you can check out [Stow - GNU Project - Free Software Foundation](https://www.gnu.org/software/stow/). I think it's a pretty basic package and it's very probably that you can install it through your system package manager.
-
-To have access to this repository, you can checkout this repository on `~/dotfiles` and initialize it
+Install `stow` first, then:
 
 ```bash
-git clone http://github.org/ppalazon/dotfiles ~/dotfiles
+git clone git@github.com:ppalazon/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-./stow-init.sh
+./scripts/bin/sh/dotfiles-stow
 ```
 
-## Structure
+`dotfiles-stow` links `base`, `editors`, `tui`, `x11`, `systemd`, `autokey` and `_private` with `stow -Sv --no-folding`, and `scripts` as a whole directory so `~/bin` keeps real files.
 
-- `base`: Basic bash configuration
-- `editors`: Configuration to work with editors
-- `tui`: Text-Based User interface configuration programs
-- `systemd`: User systemd services
-- `x11`: Configuration for `x11` applications and graphical environment `i3`
-- `_private`: Host private configuration files. No `git` or `synchthing` share
+## Layout
+
+| Folder | Contents |
+| ------ | -------- |
+| `base` | Bash config (`.bashrc`, `.bash.d/`, `.profile`, gpg-agent, ssh) |
+| `editors` | `.vimrc`, `.nanorc`, git config, lazygit, `.pandoc/` filters + templates |
+| `tui` | ranger, kitty, taskwarrior, mpd, moc |
+| `systemd` | User systemd services (`.config/systemd/user/`) |
+| `x11` | i3, i3blocks, dunst, polybar, picom, rofi, wal |
+| `autokey` | Autokey automation |
+| `scripts` | `bin/sh` (bash) and `bin/py` (python) executables |
+| `_private` | Host-private config. Never committed or synced. |
 
 ## Disclaimer
 
-These dotfiles are tailored for my personal workflow and may not work correctly on every system without modification.
-
-Always review install scripts before running them.
+These dotfiles are tailored to my workflow. They may not work on another machine without changes. Review scripts before running them.
 
 ## License
 
-Released under the MIT License.
-See [LICENSE](./LICENSE).
+Released under the MIT License. See [LICENSE](./LICENSE).

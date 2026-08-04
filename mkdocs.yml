@@ -12,9 +12,11 @@ extra:
 
 nav:
   - Home: index.md
-  - Monitor: monitor.md
-  - Workflow:
-      - Obsidian-PDF: obsidian-pdf.md
+  - How-to:
+      - Monitor layouts: monitor.md
+      - Export PDF from Obsidian: obsidian-pdf.md
+  - Reference:
+      - Workstation reference: reference.md
 
 theme:
   name: material
