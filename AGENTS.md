@@ -48,7 +48,7 @@ This repo is a [GNU stow](https://www.gnu.org/software/stow/) tree. Each top-lev
 - Use mermaid diagrams via `pymdownx.superfences` with the `mermaid` fence.
 - Verify doc changes with `mkdocs build` before finishing.
 - Docs are personal memory aids written by the `docs-writer` subagent. Two document types per Diataxis: **how-to guides** (task-oriented, real commands/keybindings, one scenario per page) and **reference** (per-config "why" entries: where, what, why, breaks-if). No tutorials or standalone explanation.
-- Voice is first-person and direct. Banned: AI-tells such as "In today's ...", "Moreover", "It's important to note", hedging ("probably", "might"), superlatives ("seamless", "robust"), closing summary paragraphs, and placeholder content.
+- Voice is impersonal and factual, written with the `simple-english` skill (ASD-STE100, pragmatic mode): 20-word procedural / 25-word descriptive sentence limits, one word one meaning, active voice, approved modals only (`can`, `will`, `must`). Banned: AI-tells such as "In today's ...", "Moreover", "It's important to note", hedging ("probably", "might"), superlatives ("seamless", "robust"), closing summary paragraphs, and placeholder content.
 - Ground every doc in the actual config/script it describes; if the "why" is not visible in the repo, ask the user instead of inventing one.
 
 ## Verification
