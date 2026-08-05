@@ -1,6 +1,6 @@
 # Dotfiles
 
-My dotfiles for an Arch Linux workstation, managed as a [GNU stow](https://www.gnu.org/software/stow/) tree. Each top-level folder mirrors `$HOME`; the real files are symlinks into this repo, which I keep at `~/dotfiles`. Some configs and scripts reference `~/dotfiles` absolutely, so that path is expected.
+These dotfiles belong to an Arch Linux workstation and are managed as a [GNU stow](https://www.gnu.org/software/stow/) tree. Each top-level folder mirrors `$HOME`. The symlinks in `$HOME` point into this repo at `~/dotfiles`. Some config files and scripts reference `~/dotfiles` absolutely, so that path is expected.
 
 Environment:
 
@@ -38,7 +38,7 @@ cd ~/dotfiles
 
 ## Disclaimer
 
-These dotfiles are tailored to my workflow. They may not work on another machine without changes. Review scripts before running them.
+These dotfiles are tailored to one workstation workflow. They can fail on another machine without changes. Review the scripts before running them.
 
 ## License
 

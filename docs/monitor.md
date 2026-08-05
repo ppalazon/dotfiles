@@ -1,17 +1,18 @@
 # Set up monitor layouts
 
-Screen layouts are xrandr scripts saved in `~/.screenlayout`. You generate them once with `arandr`, then switch between them at runtime with `$mod+x`. The default one loads at login.
+Screen layouts are xrandr scripts in `~/.screenlayout`. `arandr` generates them once, and `$mod+x` switches them at runtime. The default layout loads at login.
 
 ## Create a layout
 
-1. Open `arandr` and arrange your monitors.
-2. "Save As" and write the file to `~/.screenlayout/<name>.sh`.
+1. Open `arandr`.
+2. Arrange the monitors.
+3. Save the file as `~/.screenlayout/<name>.sh` with `"Save As"`.
 
-The file is plain `xrandr` calls plus whatever else you need. Name the one used at login `default.sh`.
+The file is plain `xrandr` calls plus anything else that the layout needs. Name the layout that loads at login `default.sh`.
 
 ## Load the default at login
 
-`monitor-init-layout` (`scripts/bin/sh/monitor-init-layout`) runs at session start from `x11/.xsession`. With no argument it executes `~/.screenlayout/default.sh`, then reloads the background from `~/.fehbg`, restarts the scratchpad (`hud-scratchpad -r`), and relaunches polybar.
+`monitor-init-layout` (`scripts/bin/sh/monitor-init-layout`) runs at session start from `x11/.xsession`. With no argument it runs `~/.screenlayout/default.sh`. Then it runs `~/.fehbg`, restarts the scratchpad with `hud-scratchpad -r`, and runs polybar again with `polybar-launcher`.
 
 ## Switch at runtime
 
@@ -21,7 +22,7 @@ The file is plain `xrandr` calls plus whatever else you need. Name the one used 
 bindsym $mod+x exec monitor-selection
 ```
 
-`monitor-selection` (`scripts/bin/sh/monitor-selection`) lists every `*.sh` in `~/.screenlayout` in rofi and calls `monitor-init-layout` with the selection. It sends a notification when the layout loads.
+`monitor-selection` (`scripts/bin/sh/monitor-selection`) lists every `*.sh` in `~/.screenlayout` in rofi and calls `monitor-init-layout` with the selection. When the layout loads, it sends a notification.
 
 ## Example layouts
 
@@ -95,7 +96,7 @@ fi
 
 | Where | What | Why | Breaks if |
 | ----- | ---- | --- | --------- |
-| `~/.screenlayout/*.sh` (generated with `arandr`) | xrandr shell scripts, one per monitor arrangement | `arandr` writes exact `xrandr` commands, so the layout is reproducible instead of hand-tuned per session | You lose per-monitor geometry and fall back to whatever the display server guesses |
-| `monitor-init-layout` calls `~/.fehbg`, `hud-scratchpad -r`, `polybar-launcher` | Re-applies background, scratchpad, and status bar after every layout switch | Output geometry changes per layout, so a monitor-dependent bar and background must be re-applied after switching | Wallpaper and polybar stay on a disconnected output after switching |
-| udev hook re-runs itself with `at now` | Forks the script out of udev | udev blocks until the script returns and runs as root, so `DISPLAY`/`XAUTHORITY` must be re-exported and the work moved out of udev's context | udev hangs on hotplug events and the script runs without access to the X server |
-| udev hook compares the HDMI EDID sha1 | Distinguishes the office monitor from a generic projector | Plugging the same connector into two different displays needs different layout logic | The projector branch runs for the office monitor (or nothing runs) |
+| `~/.screenlayout/*.sh` (generated with `arandr`) | Each layout is one xrandr shell script. | `arandr` writes exact `xrandr` commands, so the layout is reproducible instead of hand-tuned per session. | Without the exact `xrandr` commands, the display server guesses the per-monitor geometry. |
+| `monitor-init-layout` calls `~/.fehbg`, `hud-scratchpad -r`, `polybar-launcher` | It re-applies the background, scratchpad, and status bar after every layout switch. | Output geometry changes per layout, so a monitor-dependent bar and background must be re-applied after switching. | If the calls are dropped, wallpaper and polybar stay on a disconnected output after switching. |
+| udev hook (inline script above) | When the first argument is not `forked`, the script re-runs itself with `at now`. Then it sets `DISPLAY=:0` and `XAUTHORITY=$HOME/.Xauthority`. | udev waits for the script to return and runs as root, so the X server access must move outside udev. | If the fork is removed, udev hangs on hotplug events. If `DISPLAY` or `XAUTHORITY` is missing, the script has no access to the X server. |
+| `sha1sum "$cardPath/card0-HDMI-A-1/edid"` | The script compares the HDMI EDID sha1 to `784c277b180d701f8118ff993ac5dbd1b83d4ea1`. | Plugging the same connector into two different displays needs different layout logic. | If the hash changes, the projector branch runs for the office monitor, or nothing runs. |
