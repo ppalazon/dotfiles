@@ -33,7 +33,7 @@ DESCRIPTION_DIR=~/pictures/apod
 function get_page {
     echo "Downloading page: $APOD_URL"
     wget "$APOD_URL" --quiet -O /tmp/apod.html
-    grep -m 1 -e png -e jpg /tmp/apod.html | \
+    grep -m 1 -e png -e jpg -e jpeg /tmp/apod.html | \
       sed -e 's/<//' -e 's/>//' -e 's/.*=//' -e 's/"//g' \
           -e 's/^/https:\/\/apod.nasa.gov\/apod\//' > /tmp/pic_url
 }
