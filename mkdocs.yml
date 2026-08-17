@@ -13,8 +13,9 @@ extra:
 nav:
   - Home: index.md
   - How-to:
+      - Environments Source: env-source.md
+      - Python Environment: python-direnv-pyenv.md
       - Export PDF from Obsidian: obsidian-pdf.md
-      - Load project environments: env-source.md
       - Monitor layouts: monitor.md
   - Reference:
       - Workstation reference: reference.md
