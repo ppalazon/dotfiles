@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+VIVADO_PATH=$HOME/tools/xilinx/2025.2.1/Vivado
+source $VIVADO_PATH/settings64.sh
+export VIVADO_LOG_FILE="$HOME/.Xilinx/Vivado/vivado.log"
+export VIVADO_JOURNAL_FILE="$HOME/.Xilinx/Vivado/vivado.jou"
