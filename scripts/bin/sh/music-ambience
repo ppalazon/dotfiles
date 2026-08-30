@@ -1,0 +1,6 @@
+#!/bin/bash
+set -x
+
+# Check ~/.config/mpv/mpv.conf to modify ambience profile
+mpv --profile=ambience ~/music/ambience
+
