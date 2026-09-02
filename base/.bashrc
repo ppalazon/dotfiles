@@ -173,16 +173,29 @@ if command -v env-source >/dev/null 2>&1; then
   eval "$(env-source --init bash)"
 fi
 
-# Enable pyenv
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d "$PYENV_ROOT" ]] || mkdir -p "$PYENV_ROOT"
-## Check if pyenv is installed, is so init pyenv, otherwise print a warning
-if command -v pyenv >/dev/null 2>&1; then
-  eval "$(pyenv init - bash)"
+# Using mise instead of pyenv and asdf (See below)
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate bash)"
 fi
-if command -v pyenv-virtualenv-init >/dev/null 2>&1; then
-  eval "$(pyenv virtualenv-init -)"
-fi
+
+# # Enable pyenv
+# export PYENV_ROOT="$HOME/.pyenv"
+# [[ -d "$PYENV_ROOT" ]] || mkdir -p "$PYENV_ROOT"
+# ## Check if pyenv is installed, is so init pyenv, otherwise print a warning
+# if command -v pyenv >/dev/null 2>&1; then
+#   eval "$(pyenv init - bash)"
+# fi
+# if command -v pyenv-virtualenv-init >/dev/null 2>&1; then
+#   eval "$(pyenv virtualenv-init -)"
+# fi
+
+# # Add asdf
+# export ASDF_DATA_DIR=$HOME/.asdf
+# if [ -d "$ASDF_DATA_DIR" ]; then
+#   # export PATH="$ASDF_DATA_DIR/shims:$PATH"
+#   path_prepend "$ASDF_DATA_DIR/shims"
+#   . <(asdf completion bash)
+# fi
 
 # Set default aws
 export AWS_PROFILE=default
@@ -219,14 +232,6 @@ export KIOTA_HOME=/opt/kiota
 if [ -d "$KIOTA_HOME/bin" ]; then
   # export PATH="$PATH:$KIOTA_HOME/bin"
   path_append "$KIOTA_HOME/bin"
-fi
-
-# Add asdf
-export ASDF_DATA_DIR=$HOME/.asdf
-if [ -d "$ASDF_DATA_DIR" ]; then
-  # export PATH="$ASDF_DATA_DIR/shims:$PATH"
-  path_prepend "$ASDF_DATA_DIR/shims"
-  . <(asdf completion bash)
 fi
 
 # BEGIN opam configuration
