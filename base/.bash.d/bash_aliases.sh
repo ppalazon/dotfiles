@@ -27,6 +27,9 @@ alias npm='pnpm'
 alias npx='pnpx'
 alias yarn='pnpm'
 
+# Node package alias
+alias skills='pnpx skills'
+
 # Hub alias
 eval "$(hub alias -s)"
 
