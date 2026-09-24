@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v canberra-gtk-play &> /dev/null; then
+  echo "⚠️ canberra-gtk-play is not installed." >&2
+  exit 1
+fi
+
+if ! command -v fzf &> /dev/null; then
+  echo "⚠️ fzf is not installed." >&2
+  exit 1
+fi
+
+sound_roots=(
+  /usr/share/sounds
+  "${XDG_DATA_HOME:-$HOME/.local/share}/sounds"
+)
+
+list_sounds() {
+  local event_id file relative source sound_root
+
+  for sound_root in "${sound_roots[@]}"; do
+    [[ -d "$sound_root" ]] || continue
+
+    while IFS= read -r -d '' file; do
+      event_id=${file##*/}
+      event_id=${event_id%.*}
+      relative=${file#"$sound_root"/}
+      source=${relative%%/*}
+      [[ "$relative" == */* ]] || source=user
+      printf '%s\t%s\t%s\n' "$event_id" "$source" "$file"
+    done < <(
+      find -L "$sound_root" -type f \
+        \( -name '*.oga' -o -name '*.ogg' -o -name '*.wav' \) \
+        -print0
+    )
+  done
+}
+
+mapfile -t sounds < <(list_sounds | sort -t $'\t' -k1,1 -k2,2)
+
+if (( ${#sounds[@]} == 0 )); then
+  echo "⚠️ No sound files were found." >&2
+  exit 1
+fi
+
+printf '%s\n' "${sounds[@]}" \
+  | fzf \
+    --delimiter=$'\t' \
+    --with-nth=1,2 \
+    --header=$'SOUND\tSOURCE\nEnter: play  Esc: exit' \
+    --bind='enter:execute(canberra-gtk-play --file={3})'

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+case "${DUNST_URGENCY:-}" in
+  LOW)
+    sound=dialog-information
+    ;;
+  NORMAL)
+    sound=message
+    ;;
+  CRITICAL)
+    sound=complete
+    ;;
+  *)
+    exit 0
+    ;;
+esac
+
+canberra-gtk-play --id="$sound" --description="Dunst ${DUNST_URGENCY,,} notification"
