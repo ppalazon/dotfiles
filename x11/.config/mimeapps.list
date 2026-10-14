@@ -45,6 +45,7 @@ x-scheme-handler/tonsite=org.telegram.desktop.desktop
 x-scheme-handler/freetube=FreeTube.desktop
 x-scheme-handler/jetbrains=jetbrainsd.desktop
 x-scheme-hardler/teams=uma-teams.desktop
+x-scheme-handler/claude-cli=claude-code-url-handler.desktop
 
 [Added Associations]
 x-scheme-handler/http=firefox.desktop;
