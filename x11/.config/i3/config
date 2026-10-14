@@ -284,6 +284,7 @@ for_window [class="kitty-task"] floating enable
 for_window [class="kitty-btm"] floating enable
 for_window [class="kitty-btop"] floating enable
 for_window [class="kitty-music-ambience"] floating enable
+for_window [class="kitty-spotatui"] floating enable
 for_window [class="kitty-quake-terminal"] floating enable, sticky enable
 for_window [class="qalculate-qt"] floating enable
 for_window [class="kitty-pomati"] floating enable, sticky enable
@@ -295,7 +296,8 @@ bindsym $mod+p exec hud-pomati
 bindsym $mod+a exec hud-audio-control
 # bindsym $mod+o exec hud-btm
 bindsym $mod+o exec hud-btop
-bindsym $mod+m exec hud-music-ambience
+bindsym $mod+b exec hud-music-ambience
+bindsym $mod+m exec hud-spotatui
 
 # Window params, use xprop
 for_window [window_role="About"] floating enable
