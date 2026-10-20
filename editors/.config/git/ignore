@@ -85,3 +85,5 @@ artifacts/
 # Python
 .python-version
 .venv/
+
+**/.claude/settings.local.json
