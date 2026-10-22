@@ -27,8 +27,8 @@ theme:
     primary: blue grey
     accent: orange
   font:
-    text: Saira
-    code: JetBrains Mono
+    text: sans-serif
+    code: monospace
   features:
     - content.code.copy
   icon:
