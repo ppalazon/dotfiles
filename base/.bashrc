@@ -258,3 +258,8 @@ fi
 if command -v zoxide >/dev/null 2>&1; then
   eval "$(zoxide init bash)"
 fi
+
+# Adding floci bash completion
+if command -v floci >/dev/null 2>&1; then
+  eval "$(floci completion bash)"
+fi
