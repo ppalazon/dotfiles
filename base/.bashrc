@@ -261,5 +261,6 @@ fi
 
 # Adding floci bash completion
 if command -v floci >/dev/null 2>&1; then
+  export FLOCI_NO_UPDATE_CHECK=1
   eval "$(floci completion bash)"
 fi
