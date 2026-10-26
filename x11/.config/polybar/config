@@ -39,7 +39,7 @@ padding-right = 2
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = monospace:size=12
+font-0 = JetBrainsMonoNL Nerd Font:size=12
 
 ;tray-position = right
 ;tray-padding = 1
@@ -90,7 +90,7 @@ padding-right = 2
 module-margin-left = 1
 module-margin-right = 2
 
-font-0 = monospace:size=12
+font-0 = JetBrainsMonoNL Nerd Font:size=12
 
 ;tray-position = right
 ;tray-padding = 1
@@ -121,7 +121,7 @@ type = internal/tray
 format = <tray>
 format-margin = 8px
 tray-spacing = 8px
-              
+
 [module/xwindow]
 type = internal/xwindow
 label = %title:0:20:...%
@@ -244,11 +244,11 @@ label-urgent-background = ${colors.alert}
 type = internal/mpd
 format-online = <label-song>  <icon-prev> <icon-stop> <toggle> <icon-next>
 
-icon-prev = 
-icon-stop = 
-icon-play = 
+icon-prev =
+icon-stop =
+icon-play =
 icon-pause =
-icon-next = 
+icon-next =
 
 label-song-maxlen = 25
 label-song-ellipsis = true
@@ -374,7 +374,7 @@ date = " %d "
 date-alt = " %Y-%m-%d "
 time =  %H:%M
 time-alt =  %H:%M:%S
-format-prefix = 
+format-prefix =
 format-prefix-foreground = ${colors.foreground-inverse}
 ; format-underline = ${colors.base0D}
 
@@ -399,7 +399,7 @@ bar-volume-foreground-4 = ${colors.base0A}
 bar-volume-foreground-5 = ${colors.base09}
 bar-volume-foreground-6 = ${colors.base08}
 bar-volume-gradient = false
-bar-volume-indicator = 
+bar-volume-indicator =
 bar-volume-indicator-font = 2
 bar-volume-fill = ─
 bar-volume-fill-font = 2
@@ -581,7 +581,7 @@ screenchange-reload = true
 ;compositing-border = over
 
 [module/taskwarrior]
-interval = 1 
+interval = 1
 type = custom/script
 exec = ~/programming/task_polybar.sh
 format = " <label>"
