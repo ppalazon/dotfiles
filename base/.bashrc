@@ -120,9 +120,6 @@ export JGITFLOW_MVN_ARGUMENTS=""
 export SDKMAN_DIR="$HOME/.sdkman"
 [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
 
-export GNU_ARM=/opt/gcc-arm/gcc-arm-none-eabi-8-2018-q4-major
-[[ -d "$GNU_ARM/bin" ]] && path_append "$GNU_ARM/bin"
-
 export GALLEON_PATH=/opt/javatools/galleon/galleon-4.2.8.Final
 if [ -d "$GALLEON_PATH/bin" ]; then
   # export PATH="$PATH:$GALLEON_PATH/bin"
