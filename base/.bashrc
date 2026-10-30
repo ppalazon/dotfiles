@@ -261,3 +261,10 @@ if command -v floci >/dev/null 2>&1; then
   export FLOCI_NO_UPDATE_CHECK=1
   eval "$(floci completion bash)"
 fi
+
+# pnpm global executables
+export PNPM_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
+esac
